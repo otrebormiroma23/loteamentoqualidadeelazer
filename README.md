@@ -37,7 +37,7 @@ var CONFIG = {
   whatsappMessage: '',  // mensagem padrão pré-preenchida
   crmEndpoint: '',      // URL da API do CRM (POST JSON)
   crmSource: 'site_santabarbara',
-  tourUrl: '',          // URL do Tour Virtual 360º
+  tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU', // Tour 360º (modal com iframe)
   phone: '+5511999999999'
 };
 ```
@@ -65,6 +65,7 @@ var CONFIG = {
 | `section_view` | 25% da seção visível | `section` |
 | `scroll_depth` | 25/50/75/100% da página | `depth` |
 | `gallery_open` | abertura do lightbox | `item` |
+| `tour_open` | abertura do modal Tour 360º | `source` (`localizacao` \| `rodape`) |
 | `time_on_page` | 30 s na página (lead qualificado) | `seconds` |
 
 > Para depurar no console: `window.__debugTrack = true`.
@@ -98,9 +99,12 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
    com nome, e-mail e telefone — nenhuma oportunidade se perde.
 
 ### 2.4 Tour 360º, mapa e telefone
-- `tourUrl` → libera os botões "Tour Virtual 360º" (seção Localização e rodapé).
-- O mapa já aponta para a busca `Rod. Castello Branco, km 292` no Google Maps — troque pelo
-  link exato do pin (`index.html`, `#mapLink`).
+- `tourUrl` → endereço do tour. Os botões "Tour Virtual 360º" (seção Localização e rodapé)
+  abrem um **modal com iframe** por cima da página; se você esvaziar a variável, o botão volta
+  a ser link externo. Tour hospedado em terceiros (`tour.meupasseiovirtual.com`) — se um dia você
+  tiver o tour próprio, basta trocar a URL.
+- O botão "Abrir no Google Maps" aponta para o link curto do pin exato
+  (`https://maps.app.goo.gl/...`, em `index.html`, `#mapLink`).
 - `phone` → telefone do rodapé.
 
 ---

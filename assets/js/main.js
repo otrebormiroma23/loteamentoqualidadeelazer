@@ -27,8 +27,8 @@
     // Chave de origem enviada no payload para o CRM identificar a campanha (opcional)
     crmSource: 'site_santabarbara',
 
-    // URL do Tour Virtual 360º
-    tourUrl: '',
+    // URL do Tour Virtual 360º (abre em modal com iframe; sem URL, o botão vira link externo)
+    tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU',
 
     // Telefone para clique (formato tel:)
     phone: '+5511999999999'
@@ -91,8 +91,14 @@
 
     ['tourLink', 'footerTour'].forEach(function (id) {
       var el = document.getElementById(id);
-      if (el && CONFIG.tourUrl) el.href = CONFIG.tourUrl;
-      else if (el) el.removeAttribute('target');
+      if (!el) return;
+      if (CONFIG.tourUrl) {
+        el.href = CONFIG.tourUrl;   // fallback: abre em nova aba caso o JS do modal falhe
+        el.target = '_blank';
+        el.rel = 'noopener';
+      } else {
+        el.removeAttribute('target');
+      }
     });
   }
 
@@ -437,7 +443,49 @@
   }
 
   /* =========================================================
-     12. INICIALIZAÇÃO
+     12. TOUR VIRTUAL 360º (modal com iframe)
+     ========================================================= */
+  function initTour() {
+    var box = $('#tourModal');
+    if (!box) return;
+    var frame = $('#tourFrame');
+    var triggers = [$('#tourLink'), $('#footerTour')].filter(Boolean);
+    if (!triggers.length) return;
+
+    var show = function (source) {
+      if (!CONFIG.tourUrl) return false;
+      frame.src = CONFIG.tourUrl;
+      box.hidden = false;
+      document.body.style.overflow = 'hidden';
+      $('#tourClose').focus();
+      track('tour_open', { source: source || 'localizacao' });
+      return true;
+    };
+
+    var hide = function () {
+      box.hidden = true;
+      document.body.style.overflow = '';
+      frame.src = 'about:blank'; // para a reprodução/áudio do tour
+    };
+
+    triggers.forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        // sem URL configurada, deixa o link agir normalmente
+        if (!show(el.id === 'footerTour' ? 'rodape' : 'localizacao')) return;
+        e.preventDefault();
+      });
+    });
+
+    $('#tourClose').addEventListener('click', hide);
+    box.addEventListener('click', function (e) { if (e.target === box) hide(); });
+    document.addEventListener('keydown', function (e) {
+      if (box.hidden) return;
+      if (e.key === 'Escape') hide();
+    });
+  }
+
+  /* =========================================================
+     13. INICIALIZAÇÃO
      ========================================================= */
   function init() {
     initGTM();
@@ -449,6 +497,7 @@
     initForm();
     initTracking();
     initLightbox();
+    initTour();
 
     var y = $('#year');
     if (y) y.textContent = new Date().getFullYear();
