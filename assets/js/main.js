@@ -137,8 +137,8 @@
 
     var small = window.matchMedia('(max-width: 760px)').matches;
     var src = small
-      ? 'https://videos.pexels.com/video-files/4496745/4496745-hd_1280_720_30fps.mp4'   // 2,7 MB
-      : 'https://videos.pexels.com/video-files/4496745/4496745-hd_1920_1080_30fps.mp4'; // 5,2 MB
+      ? 'assets/video/hero-720.mp4'   // 2,7 MB
+      : 'assets/video/hero-1080.mp4'; // 5,2 MB
 
     var start = function () {
       var s = document.createElement('source');

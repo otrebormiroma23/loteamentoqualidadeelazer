@@ -113,13 +113,26 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
 ├── assets/
 │   ├── css/styles.css      # design system + responsivo (mobile-first)
 │   ├── js/main.js          # CONFIG, GTM, CRM, formulário, galeria, tracking
+│   ├── video/
+│   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (2,7 MB)
+│   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (5,2 MB)
 │   └── img/
 │       ├── favicon.png          # símbolo da marca (512×512)
 │       ├── logo-lockup.png      # logo sem slogan (header)
 │       ├── logo-footer.png      # logo com slogan (rodapé)
 │       ├── logo-symbol.png      # só o símbolo (redes, selos)
 │       ├── logo-santa-barbara.png # original 3508×2480 (fonte para novos cortes)
-│       └── palm-frond.svg  # overlay gráfico de folha de palmeira
+│       ├── palm-frond.svg       # overlay gráfico de folha de palmeira
+│       └── fotos/               # TODAS as fotos do site (troque mantendo o nome)
+│           ├── hero-poster.webp # capa do hero (1400×788)
+│           ├── og-capa.jpg      # imagem de compartilhamento (1200×630)
+│           ├── floresta.webp    # O Empreendimento (1000×667)
+│           ├── acqua-spa.webp   # Galeria — Acqua SPA (1100×1650)
+│           ├── clube.webp       # Galeria — Clubes (700×394)
+│           ├── ecopista.webp    # Galeria — Ecopista (700×933)
+│           ├── minigolfe.webp   # Galeria — Minigolfe (900×675)
+│           ├── lagos.webp       # Galeria — Lagos (900×1300)
+│           └── plaza.webp       # Comodidade / Plaza (1100×825)
 ├── robots.txt
 ├── sitemap.xml
 └── README.md
@@ -137,23 +150,45 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
 
 ---
 
-## 4. Trocar as imagens e o vídeo (assets provisórios)
+## 4. Trocar as fotos e o vídeo (assets provisórios)
 
-Todas as fotos e o vídeo são **provisórios** (banco de imagens gratuito — Pexels/Unsplash),
-marcados para substituição pelos materiais reais do empreendimento.
+Todas as fotos e o vídeo do site estão **dentro do projeto**, prontos para serem
+substituídos pelos materiais reais do empreendimento:
 
-| Uso | Arquivo / seção | Como trocar |
+- **Fotos:** `assets/img/fotos/` (9 arquivos)
+- **Vídeo:** `assets/video/` (2 versões do mesmo clipe)
+
+**Como trocar:** substitua o arquivo mantendo o **mesmo nome, extensão e proporção**.
+Se a proporção (largura ÷ altura) mudar, atualize também os atributos `width`/`height`
+do `<img>` correspondente para evitar salto de layout (CLS).
+
+| Arquivo local | Onde aparece | Proporção atual |
 |---|---|---|
-| Vídeo do hero | `assets/js/main.js` → `initHeroVideo()` | Substitua as URLs do Pexels pelo seu `.mp4` (recomendado: H.264, 1280×720 para mobile e 1920×1080 para desktop, ≤ 5 MB) ou coloque o arquivo em `assets/video/hero.mp4` e aponte `src` para ele |
-| Imagem de capa (poster) | `index.html` → `.hero-poster` | Troque `src`/`srcset` e o `<link rel="preload">` correspondente |
-| Fotos das seções | `index.html` → `<img>` de cada bloco | Mantenha `loading="lazy"`, `width`/`height` e `alt` descritivo |
+| `assets/img/fotos/hero-poster.webp` | Fundo do hero (também no `<link rel="preload">`) | 1400×788 (16:9) |
+| `assets/img/fotos/og-capa.jpg` | `og:image`, `twitter:image` e JSON-LD | 1200×630 |
+| `assets/img/fotos/floresta.webp` | Dobra “O Empreendimento” | 1000×667 (3:2) |
+| `assets/img/fotos/acqua-spa.webp` | Galeria — Acqua SPA | 1100×1650 (2:3) |
+| `assets/img/fotos/clube.webp` | Galeria — Clubes | 700×394 (16:9) |
+| `assets/img/fotos/ecopista.webp` | Galeria — Ecopista | 700×933 (3:4) |
+| `assets/img/fotos/minigolfe.webp` | Galeria — Minigolfe | 900×675 (4:3) |
+| `assets/img/fotos/lagos.webp` | Galeria — Lagos | 900×1300 (9:13) |
+| `assets/img/fotos/plaza.webp` | Dobra “Comodidade” (Plaza) | 1100×825 (4:3) |
+| `assets/video/hero-720.mp4` | Vídeo do hero — celular (≤ 768 px / conexão lenta) | 1280×720 |
+| `assets/video/hero-1080.mp4` | Vídeo do hero — desktop | 1920×1080 |
+
+> As imagens estão em **WebP** (padrão exigido no PRD) e o `og-capa.jpg` em JPEG,
+> formatos aceitos por redes sociais e crawlers. Exporte os arquivos novos nesses
+> mesmos formatos — ou ajuste a extensão no `index.html` se preferir JPG/PNG.
+
+| Outros assets | Arquivo | Como trocar |
+|---|---|---|
 | Overlay de palmeira | `assets/img/palm-frond.svg` | Vetor próprio, reaproveitado em 3 pontos da página |
 | Logo (header) | `assets/img/logo-lockup.png` | Troque pelo arquivo oficial mantendo o corte **sem slogan** (proporção ≈ 4,2:1). Altura controlada em `styles.css` → `.brand-logo` |
 | Logo (rodapé) | `assets/img/logo-footer.png` | Versão branca aplicada por CSS (`filter:brightness(0) invert(1)`), então qualquer cor da original serve |
 | Ícone do site | `assets/img/favicon.png` | 512×512 com transparência; referenciado no `<head>` como `icon` e `apple-touch-icon` |
 
 **Boas práticas já aplicadas:**
-- `srcset` + `sizes` (o navegador baixa só o tamanho necessário);
+- imagens **locais** (sem chamadas a CDN de terceiros — só as fontes Google saem da página);
 - `loading="lazy"` e `decoding="async"` em todas as imagens fora da dobra;
 - vídeo carregado **depois** do `load` da página (nunca atrasa o LCP), com respeito a
   `prefers-reduced-motion` e modo economia de dados;
