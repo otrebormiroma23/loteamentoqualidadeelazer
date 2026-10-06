@@ -127,7 +127,7 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
 
 ### Seções (arquitetura da informação)
 1. **Hero** — vídeo cinematográfico de fundo (palmeiras aéreas, sem som) + formulário flutuante
-2. **Indicadores** — 7,4 mi de m² · 100% Aquífero Guarani · 450–2.500 m² · 180x
+2. **Indicadores** — +7,4 mi de m² · 100% Qualidade de Vida · 450m² · 180x
 3. **O Empreendimento** — natureza, aquífero e urbanismo
 4. **Mundo de Lazer** — galeria assimétrica (Acqua SPA, Clubes, Ecopista, Minigolfe, Lagos)
 5. **Segurança & Comodidade** — Plaza Santa Bárbara em ícones finos
