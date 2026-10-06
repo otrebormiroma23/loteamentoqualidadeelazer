@@ -1,5 +1,5 @@
 /* =========================================================
-   Santa Bárbara Resort Residence — Interações, Conversão e Rastreamento
+   Santa Bárbara Resort — Interações, Conversão e Rastreamento
    ---------------------------------------------------------
    1) CONFIGURAÇÃO  → preencha os campos abaixo antes de publicar
    2) GTM / Pixels  → eventos já disparados no dataLayer
@@ -19,7 +19,7 @@
     whatsappNumber: '5511999999999',
 
     // Texto padrão enviado ao clicar em qualquer CTA de WhatsApp
-    whatsappMessage: 'Olá! Vim pelo site do Santa Bárbara Resort Residence e gostaria de saber mais sobre os lotes.',
+    whatsappMessage: 'Olá! Vim pelo site do Santa Bárbara Resort e gostaria de saber mais sobre os lotes.',
 
     // URL da API do CRM (ex.: https://api.seucrm.com.br/leads). Deixe '' para modo demonstração.
     crmEndpoint: '',
@@ -295,7 +295,7 @@
         var wa = $('#successWhats');
         if (wa) {
           wa.href = buildWhatsAppUrl(
-            'Olá! Acabei de me cadastrar no site do Santa Bárbara Resort Residence.\n' +
+            'Olá! Acabei de me cadastrar no site do Santa Bárbara Resort.\n' +
             'Nome: ' + data.nome + '\n' +
             'Quero falar sobre os lotes disponíveis.'
           );

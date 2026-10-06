@@ -1,6 +1,6 @@
-# Santa Bárbara Resort Residence — Landing Page de Alta Conversão
+# Santa Bárbara Resort — Landing Page de Alta Conversão
 
-Website institucional e de vendas do loteamento **Santa Bárbara Resort Residence**.
+Website institucional e de vendas do loteamento **Santa Bárbara Resort**.
 Página única, estática (HTML + CSS + JS puro), construída para carregar em menos de 2,5 s
 e converter tráfego pago (Meta/Google Ads) em leads qualificados.
 
