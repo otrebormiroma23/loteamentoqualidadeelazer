@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="Folha de palmeira">
+  <g fill="none" stroke="#0A3622" stroke-linecap="round">
+    <!-- eixo central -->
+    <path d="M300 575 C302 470 306 360 318 250 C325 185 336 130 352 88" stroke-width="7"/>
+
+    <!-- folhetas do lado esquerdo -->
+    <path d="M301 545 C258 528 214 516 168 512" stroke-width="6"/>
+    <path d="M302 512 C256 494 210 482 162 480" stroke-width="6"/>
+    <path d="M303 478 C255 460 208 449 158 448" stroke-width="6"/>
+    <path d="M305 444 C256 427 208 417 156 417" stroke-width="6"/>
+    <path d="M307 410 C257 394 208 385 155 386" stroke-width="6"/>
+    <path d="M309 376 C258 361 208 353 154 355" stroke-width="6"/>
+    <path d="M312 342 C261 328 210 321 156 324" stroke-width="6"/>
+    <path d="M315 308 C264 295 214 290 160 294" stroke-width="6"/>
+    <path d="M319 275 C270 263 222 259 170 264" stroke-width="6"/>
+    <path d="M323 243 C276 233 231 230 182 236" stroke-width="5"/>
+    <path d="M328 213 C284 205 243 203 198 210" stroke-width="5"/>
+    <path d="M333 185 C293 179 256 178 216 185" stroke-width="5"/>
+    <path d="M339 159 C303 155 270 155 235 162" stroke-width="4"/>
+    <path d="M345 135 C314 132 286 133 256 140" stroke-width="4"/>
+
+    <!-- folhetas do lado direito -->
+    <path d="M301 545 C344 534 390 526 438 526" stroke-width="6"/>
+    <path d="M302 512 C348 501 396 494 446 495" stroke-width="6"/>
+    <path d="M303 478 C351 468 401 462 452 464" stroke-width="6"/>
+    <path d="M305 444 C354 435 405 430 458 433" stroke-width="6"/>
+    <path d="M307 410 C357 402 409 398 463 402" stroke-width="6"/>
+    <path d="M309 376 C360 369 413 366 468 371" stroke-width="6"/>
+    <path d="M312 342 C363 336 417 334 473 340" stroke-width="6"/>
+    <path d="M315 308 C366 303 421 302 477 309" stroke-width="6"/>
+    <path d="M319 275 C370 271 424 271 481 279" stroke-width="5"/>
+    <path d="M323 243 C373 240 426 241 483 250" stroke-width="5"/>
+    <path d="M328 213 C377 211 429 213 485 222" stroke-width="5"/>
+    <path d="M333 185 C380 184 430 187 484 197" stroke-width="4"/>
+    <path d="M339 159 C384 159 431 163 482 173" stroke-width="4"/>
+    <path d="M345 135 C387 136 431 141 478 151" stroke-width="4"/>
+
+    <!-- pétalas finais -->
+    <path d="M352 88 C374 74 404 64 436 60" stroke-width="4"/>
+    <path d="M352 88 C338 66 320 50 300 40" stroke-width="4"/>
+    <path d="M352 88 C376 96 404 110 428 130" stroke-width="4"/>
+  </g>
+</svg>
