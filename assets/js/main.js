@@ -646,7 +646,7 @@
      ========================================================= */
   var LANG_KEY = 'sb_lang';
   var TR_KEY = 'sb_tr_';
-  var LANG_LABEL = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR', it: 'IT', de: 'DE', ja: 'JA', 'zh-CN': 'ZH', ko: 'KO', ru: 'RU', nl: 'NL' };
+  var LANG_LABEL = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR', it: 'IT', de: 'DE', ja: 'JA', 'zh-CN': 'ZH', ko: 'KO', ru: 'RU', nl: 'NL', ar: 'AR' };
   var idiomaAtual = 'pt';
   var pendingLang = null;
   var mapaTextos = null;   // itens com o texto original em PT (coletados uma vez)
@@ -741,8 +741,8 @@
       });
   }
 
-  /* Aquece o cache do navegador dos 10 pacotes quando o visitante abre o
-     menu de idiomas (10 × ~15 kB) — aí a troca fica instantânea. */
+  /* Aquece o cache do navegador dos 11 pacotes quando o visitante abre o
+     menu de idiomas (11 × ~15 kB) — aí a troca fica instantânea. */
   function preCarregarPacotes() {
     Object.keys(LANG_LABEL).forEach(function (l) {
       if (l === 'pt') return;
@@ -848,6 +848,7 @@
       btn.setAttribute('aria-current', btn.dataset.lang === code ? 'true' : 'false');
     });
     document.documentElement.lang = (code === 'pt') ? 'pt-BR' : code;
+    document.documentElement.dir = (code === 'ar') ? 'rtl' : 'ltr';
   }
 
   function trocarIdioma(lang) {
@@ -981,6 +982,15 @@
   /* =========================================================
      13. INICIALIZAÇÃO
      ========================================================= */
+  /* URLs antigas continuam funcionando após a troca dos nomes das âncoras */
+  var ANCORAS_ANTIGAS = { topo: 'home', 'form-hero': 'formulario', indicadores: 'numeros' };
+  function migrarAncorasAntigas() {
+    var h = location.hash.replace('#', '');
+    if (h && ANCORAS_ANTIGAS[h]) {
+      location.replace(location.pathname + location.search + '#' + ANCORAS_ANTIGAS[h]);
+    }
+  }
+
   function init() {
     initConsent();
     bindLinks();
@@ -993,6 +1003,7 @@
     initLightbox();
     initTour();
     initLang();
+    migrarAncorasAntigas();
 
     var y = $('#year');
     if (y) y.textContent = new Date().getFullYear();

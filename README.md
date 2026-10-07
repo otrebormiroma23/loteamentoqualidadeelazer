@@ -165,9 +165,9 @@ var CONFIG = {
 - Botão com gloco + sigla (`PT`) ao lado do CTA do header do `index.html` e no topo das
   páginas legais (`.legal-top`). Idiomas disponíveis:
   **Português (origem), English, Español, Français, Italiano, Deutsch, 日本語, 中文, 한국어,
-  Русский, Nederlands**.
+  Русский, Nederlands, العربية (árabe — site em RTL)**.
 - **Tradução embutida no site**: cada idioma tem um pacote JSON em `assets/js/tr/<idioma>.json`
-  (10 pacotes × 177 textos, ~148 kB no total), gerado com o motor do Google Translate mas
+  (11 pacotes × 177 textos, ~166 kB no total), gerado com o motor do Google Translate mas
   servido **do próprio domínio** — a troca fica instantânea (~0,2–0,9 s), não depende do Google
   na hora do uso (evita throttling em IP de celular), não desloca a página e funciona **antes**
   de aceitar os cookies. Sem widget/banner do Google — o layout continua 100% nosso.
@@ -176,7 +176,7 @@ var CONFIG = {
 - Funcionamento:
   - coleta automática de nós de texto + atributos (`alt`, `placeholder`, `aria-label`, `title`)
     + `<title>` + `meta description` — números, telefone e código ficam de fora;
-  - ao **abrir o menu de idiomas** pela 1ª vez os 10 pacotes são pré-aquecidos no cache do
+  - ao **abrir o menu de idiomas** pela 1ª vez os 11 pacotes são pré-aquecidos no cache do
     navegador (fetch silencioso, ~148 kB);
   - a troca carrega o pacote local e aplica; textos que não existam no pacote (ex.: texto novo
     no HTML) são completados pelo **Google Translate em tempo real** (`translate.googleapis.com`,
@@ -184,6 +184,8 @@ var CONFIG = {
   - cache por idioma em `localStorage` (`sb_tr_<idioma>`, ~14 KB por idioma) e idioma salvo em
     `sb_lang`; volta ao português restaura o texto original **byte a byte**;
   - validação do formulário (`setError`) e o “Enviando…” também são traduzidos via `tr()`;
+  - no **árabe** (`ar`) o documento vira `dir="rtl"`: alinhamentos espelhados, entrelinha maior
+    e a fonte **Tajawal** na pilha tipográfica (Inter/Montserrat/Playfair não têm glifos árabes);
   - **regenerar pacotes**: depois de alterar textos em português, me avise — o JSON é regenerado
     a partir da página (enquanto isso, o fallback do Google cobre o texto novo no visitante).
 - Idioma gerado por JS (mensagens, rótulos ARIA) segue a mesma cache — WhatsApp do consultor
@@ -209,7 +211,7 @@ var CONFIG = {
 │   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (22,5 MB)
 │   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (22,5 MB)
 │   └── img/
-│       ├── favicon.png          # símbolo da marca (512×512)
+│       ├── favicon.png          # símbolo da marca (512×512, palmeira verde sobre branco)
 │       ├── logo-lockup.png      # logo sem slogan (header)
 │       ├── logo-footer.png      # logo com slogan (rodapé)
 │       ├── logo-symbol.png      # só o símbolo (redes, selos)
@@ -217,7 +219,7 @@ var CONFIG = {
 │       ├── palm-frond.svg       # overlay gráfico de folha de palmeira
 │       └── fotos/               # TODAS as fotos do site (troque mantendo o nome)
 │           ├── hero-poster.jpg  # capa do hero (1440×1440)
-│           ├── og-capa.jpg      # imagem de compartilhamento (1440×1440)
+│           ├── og-capa.jpg      # imagem de compartilhamento (1200×630)
 │           ├── floresta.jpg     # O Empreendimento (1080×540)
 │           ├── acqua-spa.jpg    # Galeria — Acqua SPA (1440×1440)
 │           ├── clube.jpg        # Galeria — Clubes (1440×1440)
@@ -225,6 +227,7 @@ var CONFIG = {
 │           ├── minigolfe.jpg    # Galeria — Minigolfe (1440×1440)
 │           ├── lagos.jpg        # Galeria — Lagos (1000×749)
 │           └── plaza.jpg        # Comodidade / Plaza (1440×1440)
+├── favicon.ico            # ícone para quem pede /favicon.ico direto
 ├── robots.txt
 ├── sitemap.xml
 └── README.md
@@ -239,6 +242,11 @@ var CONFIG = {
 6. **Investimento** — três condições de lote + CTA principal
 7. **Localização** — distâncias, mapa, Tour 360º e FAQ (SEO)
 8. **Rodapé** — contatos, links institucionais e trust signals
+
+**Âncoras amigáveis da URL:** `#home` (topo), `#empreendimento`, `#lazer`, `#comodidade`,
+`#lotes`, `#localizacao`, `#numeros` (indicadores) e `#formulario` (formulário do herói).
+Os nomes antigos (`#topo`, `#form-hero`, `#indicadores`) continuam funcionando: o `main.js`
+redireciona (`migrarAncorasAntigas`). O `#` é o marcador de âncora e permanece na URL.
 
 ---
 
@@ -280,7 +288,7 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 | Overlay de palmeira | `assets/img/palm-frond.svg` | Vetor próprio, reaproveitado em 3 pontos da página |
 | Logo (header) | `assets/img/logo-lockup.png` | Troque pelo arquivo oficial mantendo o corte **sem slogan** (proporção ≈ 4,2:1). Altura controlada em `styles.css` → `.brand-logo` |
 | Logo (rodapé) | `assets/img/logo-footer.png` | Versão branca aplicada por CSS (`filter:brightness(0) invert(1)`), então qualquer cor da original serve |
-| Ícone do site | `assets/img/favicon.png` | 512×512 com transparência; referenciado no `<head>` como `icon` e `apple-touch-icon` |
+| Ícone do site | `assets/img/favicon.png` + `favicon.ico` (raiz) | 512×512, palmeira verde sobre branco (visível em fundo claro e escuro); `<head>` com `?v=` para o CF não servir versão velha |
 
 **Boas práticas já aplicadas:**
 - imagens **locais** (sem chamadas a CDN de terceiros — só as fontes Google saem da página);
@@ -334,15 +342,15 @@ O site é **100% estático** (HTML/CSS/JS, sem build) — roda no plano comparti
 mais simples da HostGator.
 
 ### 6.1 Pacote de upload
-ZIP com `.htaccess` + `index.html` + as 3 páginas legais + `robots.txt` +
-`sitemap.xml` + pasta `assets/` com os pacotes de idioma (**36 arquivos, ~46,7 MB**).
+ZIP com `.htaccess` + `favicon.ico` + `index.html` + as 3 páginas legais + `robots.txt` +
+`sitemap.xml` + pasta `assets/` com os pacotes de idioma (**38 arquivos, ~46,5 MB**).
 Sem `.git` e sem `README`.
 
 ```powershell
 # gerar/atualizar o ZIP (PowerShell, na raiz do projeto)
 $zip = "$env:LOCALAPPDATA\Temp\opencode\site-hostgator.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
-$files = @('.htaccess','index.html','lgpd.html','politica-de-privacidade.html',
+$files = @('.htaccess','favicon.ico','index.html','lgpd.html','politica-de-privacidade.html',
            'termos-de-uso.html','robots.txt','sitemap.xml')
 $files += (Get-ChildItem -Recurse -File assets).FullName
 Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
@@ -404,7 +412,7 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   fazer *Purge Everything* no CF, o que exige login)
 - **Duas proteções contra cache velho:**
   1. **cache-busting por query string** — as 4 páginas HTML referenciam
-     `assets/css/styles.css?v=20261007c` e `assets/js/main.js?v=20261007c`;
+     `assets/css/styles.css?v=20261007d` e `assets/js/main.js?v=20261007d`;
      como o HTML **não** é cacheado (`cf-cache-status: DYNAMIC`, `max-age=0`),
      cada upload de HTML entrega as URLs novas → CF busca os arquivos no origin;
   2. **`.htaccess` manda `Cloudflare-CDN-Cache-Control: no-cache`** para
@@ -418,9 +426,9 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - ⚠️ **Ao alterar `styles.css` ou `main.js`: aumente a `?v=` nas 4 páginas**
   (`index.html`, `lgpd.html`, `politica-de-privacidade.html`, `termos-de-uso.html`)
   e suba os 4 HTMLs junto com o arquivo alterado — formato `?v=AAAAMMDD` (+ letra
-  se houver mais de uma mudança no mesmo dia; versão atual: `20261007c`)
+  se houver mais de uma mudança no mesmo dia; versão atual: `20261007d`)
 - Conferência rápida: abrir
-  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007c`
+  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007d`
   e procurar o marcador da última alteração
 
 ### 6.5 Status pós-publicação
@@ -432,7 +440,7 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - [x] domínio aplicado em todas as URLs (`canonical`, `og:url`, `og:image`, JSON-LD,
       `robots.txt`, `sitemap.xml`) — `https://loteamentoqualidadeelazer.com.br/`
 - [x] Meta Pixel no ar (`signals/config/1128316885943842`), só após consentimento
-- [x] idiomas no ar (11 opções; pacotes locais `assets/js/tr/*.json` — troca instantânea,
+- [x] idiomas no ar (12 opções, incl. árabe; pacotes locais `assets/js/tr/*.json` — troca instantânea,
       sem depender do Google e sem exigir consentimento; EN → PT restaura o texto original)
 - [x] Lighthouse no ar: Acessibilidade 100 · Boas Práticas 100 · SEO 100 (0 falhas)
 - [x] **backup do site antigo localizado** no Downloads antes da substituição:
