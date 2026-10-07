@@ -907,6 +907,24 @@
       btn.focus();
     });
 
+    // Em telas pequenas o seletor mora na barra do header (sempre visível);
+    // no desktop ele fica dentro do menu principal.
+    var sw = $('#langSwitch');
+    var inner = $('.header-inner');
+    var nav = $('#nav');
+    var toggle = $('#navToggle');
+    var ajustarLocal = function () {
+      if (!sw || !inner || !nav || !toggle) return;   // páginas legais
+      var noHeader = sw.parentNode === inner;
+      if (window.matchMedia('(max-width: 940px)').matches) {
+        if (!noHeader) inner.insertBefore(sw, toggle);
+      } else if (noHeader) {
+        nav.insertBefore(sw, nav.querySelector('.nav-cta'));
+      }
+    };
+    ajustarLocal();
+    window.addEventListener('resize', ajustarLocal);
+
     // Restaura o idioma salvo (só quando os cookies já foram aceitos)
     var saved = null;
     try { saved = localStorage.getItem(LANG_KEY); } catch (e) { /* modo privado */ }
