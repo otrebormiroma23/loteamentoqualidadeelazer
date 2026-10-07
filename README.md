@@ -283,7 +283,8 @@ Checklist antes do ar:
 - [ ] `gtmId` preenchido
 - [ ] **`leadfyId`** (IDENTIFICADOR enviado pela suporte da Leadfy) ou `crmEndpoint` preenchido
 - [ ] testar o formulário de ponta a ponta e confirmar o lead chegando no painel da Leadfy
-- [ ] domínio real no `canonical`, Open Graph, `robots.txt` e `sitemap.xml`
+- [x] domínio real (`https://loteamentoqualidadeelazer.com.br/`) no `canonical`, Open Graph,
+      JSON-LD, `robots.txt` e `sitemap.xml`
 - [ ] CRECI, telefone e endereço atualizados no rodapé
 - [ ] imagens e vídeo definitivos do empreendimento
 - [ ] testar o formulário no celular (máscara de WhatsApp e botão de polegar)
@@ -332,13 +333,15 @@ Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
 - força HTTPS, `DirectoryIndex index.html`, `Options -Indexes`
 - gzip (mod_deflate), cache de 6 meses para imagens/vídeo, 0 para HTML
 - cabeçalhos `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`
-- **regras de www/sem www comentadas** — descomente UMA depois do domínio estar no ar
+- **regras de domínio ativas:** força `https://` e **`www.` → sem `www`**
+  (oficial: `loteamentoqualidadeelazer.com.br`); a variante “com `www`” fica
+  comentada no próprio arquivo, caso queira inverter
 
 ### 6.5 Depois do primeiro upload
-- [ ] abrir `https://SEUDOMINIO/` e conferir fotos, vídeo, formulário e WhatsApp
-- [ ] descomentar no `.htaccess` a regra de **www** ou **sem www** (escolher só uma)
-- [ ] trocar o domínio placeholder (`santabarbararesort.com.br`) em `canonical`,
-      `og:url`, `og:image`, JSON-LD, `robots.txt` e `sitemap.xml`
+- [ ] abrir `https://loteamentoqualidadeelazer.com.br/` e conferir fotos, vídeo, formulário e WhatsApp
+- [x] domínio aplicado em todas as URLs (`canonical`, `og:url`, `og:image`, JSON-LD,
+      `robots.txt`, `sitemap.xml`) — `https://loteamentoqualidadeelazer.com.br/`
+- [x] `.htaccess` forçando `https://` e redirecionando `www.` → sem `www`
 - [ ] Google Search Console → adicionar site → enviar `sitemap.xml`
 - [ ] conferir Meta Pixel e GTM no navegador (depois de aceitar cookies)
 - [ ] testar o formulário no celular (lead chegando na Leadfy)
