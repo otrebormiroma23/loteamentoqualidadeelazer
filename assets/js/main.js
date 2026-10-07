@@ -2,8 +2,9 @@
    Santa Bárbara Resort — Interações, Conversão e Rastreamento
    ---------------------------------------------------------
    1) CONFIGURAÇÃO  → preencha os campos abaixo antes de publicar
-   2) GTM / Pixels  → eventos já disparados no dataLayer
-   3) CRM           → envio do formulário via API (fallback WhatsApp)
+   2) GTM / Pixels  → eventos já disparados no dataLayer + Meta Pixel
+   3) CRM           → envio do formulário (Leadfy ou CRM genérico) + fallback WhatsApp
+   4) IDIOMAS       → seletor de idioma com Google Translate (após consentimento)
    ========================================================= */
 (function () {
   'use strict';
@@ -27,6 +28,16 @@
     // Chave de origem enviada no payload para o CRM identificar a campanha (opcional)
     crmSource: 'site_santabarbara',
 
+    // ID do Meta Pixel (Facebook/Instagram) — ex.: '123456789012345'.
+    // Deixe '' para manter desativado. Só carrega após o aceite de cookies.
+    metaPixelId: '',
+
+    // Leadfy — IDENTIFICADOR do webhook de criação de lead.
+    // Formatos aceitos: hash da empresa (10 caracteres, ex.: '18952qf65x'),
+    // 'grp-xxxxxx' (grupo) ou 'usr-xxxxxx' (corretor). Peça à equipe de suporte da Leadfy.
+    // Deixe '' para manter o modo demonstração.
+    leadfyId: '',
+
     // URL do Tour Virtual 360º (abre em modal com iframe; sem URL, o botão vira link externo)
     tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU',
 
@@ -43,6 +54,7 @@
     var payload = Object.assign({ event: event, page: location.pathname }, params || {});
     window.dataLayer.push(payload);
     if (window.__debugTrack) console.log('[track]', payload);
+    metaTrack(event);
   }
 
   function initGTM() {
@@ -56,6 +68,48 @@
       'j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);' +
       '})(window,document,"script","dataLayer","' + CONFIG.gtmId + '");';
     document.head.appendChild(s);
+  }
+
+  /* =========================================================
+     2.2 META PIXEL (Facebook / Instagram)
+     Carregado somente após o consentimento de cookies.
+     Nunca envia dados pessoais (PII) para o pixel.
+     ========================================================= */
+  var META_MAP = {
+    whatsapp_click: 'Contact',
+    phone_click: 'Contact',
+    lead_generated: 'Lead',
+    tour_open: 'ViewContent',
+    gallery_open: 'ViewContent'
+  };
+
+  function metaTrack(event) {
+    if (typeof window.fbq !== 'function') return;
+    var ev = META_MAP[event];
+    if (!ev) return;
+    window.fbq('track', ev, { content_name: 'Santa Bárbara Resort' });
+  }
+
+  function initPixel() {
+    if (window.__pixelLoaded) return;
+    if (!/^\d{6,20}$/.test(CONFIG.metaPixelId)) return;
+    window.__pixelLoaded = true;
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', CONFIG.metaPixelId);
+    window.fbq('track', 'PageView');
+    window.fbq('consent', readConsent() === 'granted' ? 'grant' : 'revoke');
+  }
+
+  function pixelConsent(granted) {
+    if (typeof window.fbq !== 'function') return;
+    window.fbq('consent', granted ? 'grant' : 'revoke');
   }
 
   /* =========================================================
@@ -106,7 +160,8 @@
     var apply = function (value) {
       writeConsent(value);
       consentUpdate(value === 'granted');
-      if (value === 'granted') initGTM();   // sem aceite, GTM/pixels não são injetados
+      if (value === 'granted') { initGTM(); initPixel(); applyPendingLang(); }   // sem aceite, GTM/pixels não são injetados
+      else { pixelConsent(false); }
       hide();
       track('cookie_consent', { choice: value });
     };
@@ -120,7 +175,7 @@
     var prefs = $('#cookiePrefs');
     if (prefs) prefs.addEventListener('click', function (e) { e.preventDefault(); show(); });
 
-    if (choice === 'granted') { consentUpdate(true); initGTM(); hide(); }
+    if (choice === 'granted') { consentUpdate(true); initGTM(); initPixel(); hide(); }
     else if (choice === 'denied') { consentUpdate(false); hide(); }
     else { show(); } // primeira visita: sem escolha, nada de terceiros
   }
@@ -178,7 +233,7 @@
   function initHeader() {
     var header = $('#header');
     var toggle = $('#navToggle');
-    var nav = $('#nav');
+    if (!header) return;   // páginas legais não têm o header do site
 
     var onScroll = function () {
       header.classList.toggle('is-solid', window.scrollY > 60);
@@ -186,7 +241,7 @@
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    toggle.addEventListener('click', function () {
+    if (toggle) toggle.addEventListener('click', function () {
       var open = document.body.classList.toggle('nav-open');
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
@@ -296,7 +351,7 @@
     var input = document.getElementById(name);
     var slot = document.querySelector('[data-error-for="' + name + '"]');
     if (input) input.classList.toggle('is-invalid', !!msg);
-    if (slot) slot.textContent = msg || '';
+    if (slot) slot.textContent = msg ? tr(msg) : '';
   }
 
   function validate(data) {
@@ -350,17 +405,41 @@
       var btn = form.querySelector('button[type="submit"]');
       var original = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Enviando…';
+      btn.textContent = tr('Enviando…');
+
+      var utmData = utm();
+
+      // Endpoint: webhook oficial da Leadfy (CONFIG.leadfyId) ou CRM genérico
+      var leadfyUrl = CONFIG.leadfyId
+        ? 'https://leadfy-imob.com.br/webhooks/criar_lead/' + encodeURIComponent(CONFIG.leadfyId) + '/'
+        : '';
+      var endpoint = leadfyUrl || CONFIG.crmEndpoint;
 
       var payload = Object.assign({
         nome: data.nome,
         email: data.email,
         whatsapp: data.whatsapp.replace(/\D/g, ''),
         page: location.href,
-        utm: utm(),
+        utm: utmData,
         source: CONFIG.crmSource,
         timestamp: new Date().toISOString()
-      }, utm());
+      }, utmData);
+
+      // Payload no padrão documentado pela API da Leadfy
+      // (https://leadfy-imob.com.br/ajuda/integracao-via-api)
+      var leadfyPayload = {
+        nome: data.nome,
+        email: data.email,
+        telefone: data.whatsapp.replace(/\D/g, ''),
+        name: data.nome,                             // alias citado no exemplo da própria documentação
+        phone: data.whatsapp.replace(/\D/g, ''),     // alias citado no exemplo da própria documentação
+        origem: CONFIG.crmSource,
+        tag: 'site',
+        descricao: 'Cadastro pelo site — Santa Bárbara Resort',
+        mensagem: 'Solicitação de informações: lotes de 450m² a 2.500m²',
+        observacao: 'Página: ' + location.href +
+          (Object.keys(utmData).length ? ' | UTM: ' + JSON.stringify(utmData) : '')
+      };
 
       var success = function () {
         btn.disabled = false;
@@ -385,24 +464,24 @@
         });
       };
 
-      if (!CONFIG.crmEndpoint) {
-        // Modo demonstração: substitua CONFIG.crmEndpoint pela API do CRM
-        console.info('[Santa Bárbara] CRM não configurado — lead capturado em modo demo:', payload);
+      if (!endpoint) {
+        // Modo demonstração: preencha CONFIG.leadfyId (Leadfy) ou CONFIG.crmEndpoint (CRM)
+        console.info('[Santa Bárbara] Leadfy/CRM não configurado — lead capturado em modo demo:', payload);
         setTimeout(success, 500);
         return;
       }
 
-      fetch(CONFIG.crmEndpoint, {
+      fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(leadfyUrl ? leadfyPayload : payload)
       })
         .then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           success();
         })
         .catch(function (err) {
-          console.error('[Santa Bárbara] Falha ao enviar para o CRM:', err);
+          console.error('[Santa Bárbara] Falha ao enviar para o Leadfy/CRM:', err);
           track('lead_error', { form_id: 'hero_lead' });
           // Fallback: envia o lead direto para o WhatsApp do consultor
           window.open(buildWhatsAppUrl(
@@ -555,6 +634,289 @@
   }
 
   /* =========================================================
+     12.1 IDIOMAS — tradutor embutido (motor do Google Translate)
+     Sem widget/banner do Google: usamos a API pública de tradução
+     (translate.googleapis.com), carregada só após consentimento.
+     ========================================================= */
+  var LANG_KEY = 'sb_lang';
+  var TR_KEY = 'sb_tr_';
+  var LANG_LABEL = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR', it: 'IT', de: 'DE', ja: 'JA', 'zh-CN': 'ZH', ko: 'KO', ru: 'RU', nl: 'NL' };
+  var idiomaAtual = 'pt';
+  var pendingLang = null;
+  var mapaTextos = null;   // itens com o texto original em PT (coletados uma vez)
+  var cacheTr = {};        // cacheTr[idioma] = { textoOriginal: traducao }
+  var traduzindo = false;
+
+  // Strings geradas pelo JavaScript (não existem no DOM)
+  var TR_EXTRAS = [
+    'Informe o seu nome completo.',
+    'Informe um e-mail válido.',
+    'Informe um WhatsApp válido com DDD.',
+    'Enviando…'
+  ];
+
+  // Traduz uma string já em cache (usada pela validação do formulário)
+  function tr(txt) {
+    if (idiomaAtual === 'pt' || !txt) return txt;
+    var c = cacheTr[idiomaAtual];
+    return (c && c[txt]) ? c[txt] : txt;
+  }
+
+  /* ---- coleta dos textos traduzíveis (nós + atributos + meta) ---- */
+  function montarMapa() {
+    if (mapaTextos) return mapaTextos;
+
+    var itens = [];
+    var ignorar = '#langSwitch, .notranslate, .counter, .strip-value, .creci';
+
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode;
+        if (!p || !p.nodeName) return NodeFilter.FILTER_REJECT;
+        if (/^(SCRIPT|STYLE|NOSCRIPT|IFRAME|TEXTAREA|OPTION|CODE|KBD)$/.test(p.nodeName)) return NodeFilter.FILTER_REJECT;
+        if (p.ownerSVGElement) return NodeFilter.FILTER_REJECT;
+        if (p.closest && p.closest(ignorar)) return NodeFilter.FILTER_REJECT;
+        var t = n.nodeValue;
+        if (!t || !t.trim()) return NodeFilter.FILTER_REJECT;
+        if (!/[A-Za-zÀ-ÿ]/.test(t)) return NodeFilter.FILTER_REJECT;   // só números/telefones ficam de fora
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    var node;
+    while ((node = walker.nextNode())) {
+      itens.push({ node: node, orig: node.nodeValue, chave: node.nodeValue.trim() });
+    }
+
+    ['alt', 'placeholder', 'aria-label', 'title'].forEach(function (attr) {
+      Array.prototype.forEach.call(document.querySelectorAll('[' + attr + ']'), function (el) {
+        if (el.closest && el.closest(ignorar)) return;
+        var v = el.getAttribute(attr);
+        if (!v || !v.trim() || !/[A-Za-zÀ-ÿ]/.test(v)) return;
+        itens.push({ el: el, attr: attr, orig: v, chave: v.trim() });
+      });
+    });
+
+    itens.push({ tipo: 'title', orig: document.title, chave: document.title.trim() });
+
+    var md = document.querySelector('meta[name="description"]');
+    if (md) itens.push({ el: md, attr: 'content', orig: md.getAttribute('content'), chave: md.getAttribute('content').trim() });
+
+    mapaTextos = itens;
+    return itens;
+  }
+
+  /* ---- cache por idioma (localStorage) ---- */
+  function lerCache(lang) {
+    if (cacheTr[lang]) return cacheTr[lang];
+    cacheTr[lang] = {};
+    try {
+      var raw = localStorage.getItem(TR_KEY + lang);
+      if (raw) cacheTr[lang] = JSON.parse(raw) || {};
+    } catch (e) { /* modo privado */ }
+    return cacheTr[lang];
+  }
+
+  function gravarCache(lang) {
+    try { localStorage.setItem(TR_KEY + lang, JSON.stringify(cacheTr[lang])); } catch (e) { /* modo privado */ }
+  }
+
+  /* ---- requisições ao Google Translate ---- */
+  function urlTraducao(lang, texto) {
+    return 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=' +
+      encodeURIComponent(lang) + '&dt=t&q=' + encodeURIComponent(texto);
+  }
+
+  function parseResposta(json) {
+    return (json && json[0] ? json[0] : []).map(function (s) { return s[0]; }).join('');
+  }
+
+  function traduzirUmAVUm(textos, lang) {
+    var c = lerCache(lang);
+    return textos.reduce(function (p, t) {
+      return p.then(function () {
+        return fetch(urlTraducao(lang, t))
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function (j) { c[t] = parseResposta(j).trim(); })
+          .catch(function () { /* mantém o texto original */ });
+      });
+    }, Promise.resolve());
+  }
+
+  function traduzirBloco(textos, lang) {
+    var pacote = textos.join('\n@@\n');
+    return fetch(urlTraducao(lang, pacote))
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        var partes = parseResposta(j).split('\n@@\n');
+        if (partes.length !== textos.length) return traduzirUmAVUm(textos, lang); // estrutura inesperada
+        var c = lerCache(lang);
+        textos.forEach(function (t, k) { c[t] = partes[k].trim(); });
+      });
+  }
+
+  function traduzirPendentes(lang) {
+    var c = lerCache(lang);
+    var pendentes = [];
+    var vistos = {};
+
+    var fontes = montarMapa().map(function (i) { return i.chave; }).concat(TR_EXTRAS);
+    fontes.forEach(function (t) {
+      if (!t || vistos[t]) return;
+      vistos[t] = 1;
+      if (c[t] === undefined) pendentes.push(t);
+    });
+    if (!pendentes.length) return Promise.resolve();
+
+    // Blocos de até 10 textos / ~950 caracteres, 3 blocos em paralelo
+    var blocos = [], atual = [], tam = 0;
+    pendentes.forEach(function (t) {
+      if (atual.length && (tam + t.length + 10 > 950 || atual.length >= 10)) { blocos.push(atual); atual = []; tam = 0; }
+      atual.push(t); tam += t.length + 10;
+    });
+    if (atual.length) blocos.push(atual);
+
+    var proximo = 0;
+    function rodar() {
+      if (proximo >= blocos.length) return Promise.resolve();
+      var bloco = blocos[proximo++];
+      return traduzirBloco(bloco, lang).then(rodar, rodar);
+    }
+
+    var pistas = [];
+    for (var k = 0; k < 3; k++) pistas.push(rodar());
+
+    return Promise.all(pistas).then(function () { gravarCache(lang); });
+  }
+
+  /* ---- aplicação no DOM ---- */
+  function aplicarIdioma(lang) {
+    var c = lerCache(lang);
+    var itens = montarMapa();
+
+    itens.forEach(function (item) {
+      var alvo = item.orig;
+      if (lang !== 'pt' && c[item.chave] !== undefined) alvo = c[item.chave];
+
+      if (item.node) {
+        var lead = (item.orig.match(/^\s*/) || [''])[0];
+        var fim = (item.orig.match(/\s*$/) || [''])[0];
+        item.node.nodeValue = lead + alvo + fim;
+      } else if (item.el) {
+        item.el.setAttribute(item.attr, alvo);
+      } else if (item.tipo === 'title') {
+        document.title = alvo;
+      }
+    });
+  }
+
+  function setLangUI(code) {
+    var cur = $('#langCurrent');
+    if (cur) cur.textContent = LANG_LABEL[code] || 'PT';
+    var b = $('#langBtn');
+    if (b) b.setAttribute('aria-label', (LANG_LABEL[code] || 'PT') + ' — Idioma do site');
+    $$('#langMenu button[data-lang]').forEach(function (btn) {
+      btn.setAttribute('aria-current', btn.dataset.lang === code ? 'true' : 'false');
+    });
+    document.documentElement.lang = (code === 'pt') ? 'pt-BR' : code;
+  }
+
+  function trocarIdioma(lang) {
+    if (traduzindo || lang === idiomaAtual) return;
+
+    if (lang !== 'pt' && readConsent() !== 'granted') {
+      // Sem consentimento não consultamos serviços de terceiros
+      pendingLang = lang;
+      var hint = $('#cookieHint');
+      if (hint) hint.hidden = false;
+      var bar = $('#cookieBar');
+      if (bar) bar.hidden = false;
+      var acc = $('#cookieAccept');
+      if (acc) acc.focus();
+      return;
+    }
+
+    var btn = $('#langBtn');
+    var concluir = function () {
+      aplicarIdioma(lang);
+      setLangUI(lang);
+      traduzindo = false;
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+      try {
+        if (lang === 'pt') localStorage.removeItem(LANG_KEY);
+        else localStorage.setItem(LANG_KEY, lang);
+      } catch (e) { /* modo privado */ }
+      track('lang_change', { lang: lang });
+    };
+
+    idiomaAtual = lang;
+
+    if (lang === 'pt') { concluir(); return; }
+
+    traduzindo = true;
+    if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
+
+    traduzirPendentes(lang)
+      .then(concluir)
+      .catch(function (err) {
+        console.warn('[Santa Bárbara] Falha ao traduzir:', err);
+        concluir();   // aplica o que já estava em cache; o resto permanece em PT
+      });
+  }
+
+  function applyPendingLang() {
+    if (!pendingLang) return;
+    var code = pendingLang;
+    pendingLang = null;
+    var hint = $('#cookieHint');
+    if (hint) hint.hidden = true;
+    trocarIdioma(code);
+  }
+
+  function initLang() {
+    var btn = $('#langBtn');
+    var menu = $('#langMenu');
+    if (!btn || !menu) return;
+
+    var open = function (state) {
+      menu.hidden = !state;
+      btn.setAttribute('aria-expanded', String(state));
+    };
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      open(menu.hidden);
+    });
+
+    menu.addEventListener('click', function (e) {
+      var item = e.target.closest('button[data-lang]');
+      if (!item) return;
+      trocarIdioma(item.dataset.lang);
+      open(false);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (menu.hidden) return;
+      if (e.target.closest('#langSwitch')) return;
+      open(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || menu.hidden) return;
+      open(false);
+      btn.focus();
+    });
+
+    // Restaura o idioma salvo (só quando os cookies já foram aceitos)
+    var saved = null;
+    try { saved = localStorage.getItem(LANG_KEY); } catch (e) { /* modo privado */ }
+    if (saved && saved !== 'pt') {
+      if (readConsent() === 'granted') trocarIdioma(saved);
+      else pendingLang = saved;   // aplica assim que o visitante aceitar
+    }
+  }
+
+  /* =========================================================
      13. INICIALIZAÇÃO
      ========================================================= */
   function init() {
@@ -568,6 +930,7 @@
     initTracking();
     initLightbox();
     initTour();
+    initLang();
 
     var y = $('#year');
     if (y) y.textContent = new Date().getFullYear();

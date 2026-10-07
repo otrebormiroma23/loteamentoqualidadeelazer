@@ -70,37 +70,58 @@ var CONFIG = {
 | `gallery_open` | abertura do lightbox | `item` |
 | `cookie_consent` | clique em “Aceitar”/“Recusar” cookies | `choice` (`granted` \| `denied`) |
 | `tour_open` | abertura do modal Tour 360º | `source` (`localizacao` \| `rodape`) |
+| `lang_change` | troca de idioma pelo seletor do header | `lang` (`en` \| `fr` \| …) |
 | `time_on_page` | 30 s na página (lead qualificado) | `seconds` |
 
 > Para depurar no console: `window.__debugTrack = true`.
 
-Conecte `lead_generated` ao **Meta Pixel** (evento `Lead`) e ao **Google Ads** (evento de conversão)
-direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao longo das campanhas.
+#### Meta Pixel (Facebook / Instagram)
+1. Pegue o **ID do pixel**: business.facebook.com → *Gerenciador de Eventos* → *Configurações do
+   pixel* → copie o *ID do pixel* (formato `123456789012345`).
+2. Cole em `metaPixelId` (em `assets/js/main.js`). Vazio = pixel desligado.
+3. O pixel é injetado **somente após o aceite de cookies** e dispara:
 
-### 2.3 Integração com o CRM
-1. Preencha `crmEndpoint` com a URL da API que recebe o lead.
-2. O JS envia `POST` com `Content-Type: application/json`:
+| Evento Meta | Quando |
+|---|---|
+| `PageView` | carregamento da página |
+| `Contact` | clique em WhatsApp ou telefone (`whatsapp_click`, `phone_click`) |
+| `Lead` | envio válido do formulário (`lead_generated`) — **conversão** |
+| `ViewContent` | abertura do Tour 360º e da galeria |
+
+4. Nenhum dado pessoal (PII) é enviado ao pixel — só o `content_name: 'Santa Bárbara Resort'`.
+5. Se o visitante recusar os cookies depois, `fbq('consent','revoke')` é chamado.
+6. Para Google Ads, use o GTM (`gtmId`) e crie lá o evento de conversão.
+
+### 2.3 Integração com a Leadfy (ou CRM genérico)
+1. Peça à equipe de suporte da Leadfy o **IDENTIFICADOR** do webhook (hash de 10 caracteres
+   da empresa, ou `grp-xxxxxx` para grupo, ou `usr-xxxxxx` para corretor) e cole em `leadfyId`.
+   Documentação: `https://leadfy-imob.com.br/ajuda/integracao-via-api`.
+2. Com `leadfyId` preenchido, o JS envia `POST` para
+   `https://leadfy-imob.com.br/webhooks/criar_lead/<IDENTIFICADOR>/` no formato que a API
+   documenta (inclui os aliases `name`/`phone` citados no exemplo dela):
 
 ```json
 {
   "nome": "Maria Silva",
   "email": "maria@email.com",
-  "whatsapp": "5511988887777",
-  "page": "https://site/",
-  "utm_source": "instagram",
-  "utm_medium": "paid",
-  "utm_campaign": "lancamento_lotes",
-  "gclid": "...",
-  "fbclid": "...",
-  "source": "site_santabarbara",
-  "timestamp": "2026-10-06T14:00:00.000Z"
+  "telefone": "11988887777",
+  "name": "Maria Silva",
+  "phone": "11988887777",
+  "origem": "site_santabarbara",
+  "tag": "site",
+  "descricao": "Cadastro pelo site — Santa Bárbara Resort",
+  "mensagem": "Solicitação de informações: lotes de 450m² a 2.500m²",
+  "observacao": "Página: https://site/ | UTM: {...}"
 }
 ```
 
-3. Enquanto `crmEndpoint` estiver vazio, o formulário roda em **modo demonstração**
-   (só exibe a tela de sucesso e registra `lead_generated`).
-4. Se a API falhar, o lead é **automaticamente reenviado ao WhatsApp do consultor**
-   com nome, e-mail e telefone — nenhuma oportunidade se perde.
+3. Alternativa (CRM próprio): preencha `crmEndpoint` — nesse caso o payload é o JSON genérico
+   (`nome`, `email`, `whatsapp`, `page`, `utm_*`, `gclid`, `fbclid`, `source`, `timestamp`).
+4. Enquanto `leadfyId` e `crmEndpoint` estiverem vazios, o formulário roda em **modo
+   demonstração** (só exibe a tela de sucesso e registra `lead_generated`).
+5. Se a API falhar (inclusive bloqueio de CORS do navegador), o lead é **automaticamente
+   reenviado ao WhatsApp do consultor** com nome, e-mail e telefone — nenhuma oportunidade
+   se perde. Se acontecer em produção, avise: dá para contornar via servidor/worker.
 
 ### 2.4 Tour 360º, mapa e telefone
 - `tourUrl` → endereço do tour. Os botões "Tour Virtual 360º" (seção Localização e rodapé)
@@ -112,14 +133,40 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
 - `phone` → telefone do rodapé.
 
 ### 2.5 Cookies e consentimento (LGPD)
-- O aviso de cookies aparece **na primeira visita**. Sem escolha registrada, o GTM **não é
-  injetado** e nenhum pixel roda — só o estritamente necessário ao site.
+- O aviso de cookies aparece **na primeira visita** (nas 4 páginas). Sem escolha registrada, o GTM
+  **não é injetado** e nenhum pixel roda — só o estritamente necessário ao site.
 - Ao aceitar: `gtag('consent','update', granted)` é enviado (Consent Mode v2) e o GTM carrega.
   Ao recusar: nada de terceiros é carregado.
 - A escolha fica em `localStorage` na chave `sb_cookie_consent` (`granted` / `denied`) e pode
   ser reaberta pelo link **“Preferências de cookies”** do rodapé (`#cookiePrefs`).
 - No GTM, configure os triggers assumindo **Consent Mode**: `ad_storage`,
   `ad_user_data`, `ad_personalization` e `analytics_storage`.
+- O **tradutor do site** também é terceiro: sem aceite, escolher um idioma reabre o aviso com a
+  linha “Para usar o tradutor automático do site, é preciso aceitar os cookies.” — e o idioma
+  escolhido é aplicado assim que o visitante aceitar.
+
+### 2.6 Idiomas (seletor em todas as páginas)
+- Botão com gloco + sigla (`PT`) ao lado do CTA do header do `index.html` e no topo das
+  páginas legais (`.legal-top`). Idiomas disponíveis:
+  **Português (origem), English, Español, Français, Italiano, Deutsch, 日本語, 中文, 한국어,
+  Русский, Nederlands**.
+- O tradutor usa o **motor do Google Translate** (`translate.googleapis.com`, `client=gtx`),
+  porém sem o widget/banner do Google — o layout continua 100% nosso, sem barra do Google e
+  sem deslocamento de página. *(O widget oficial `TranslateElement` foi testado e ficou travado
+  em “Tradução em andamento (0%)” também em página isolada.)*
+- Funcionamento:
+  - coleta automática de nós de texto + atributos (`alt`, `placeholder`, `aria-label`, `title`)
+    + `<title>` + `meta description` — números, telefone e código ficam de fora;
+  - busca em blocos de até 10 textos, 3 blocos em paralelo (primeira troca ~5–15 s, com
+    spinner no botão; as trocas seguintes são instantâneas a partir do cache);
+  - cache por idioma em `localStorage` (`sb_tr_<idioma>`, ~14 KB por idioma) e idioma salvo em
+    `sb_lang`; volta ao português restaura o texto original **byte a byte**;
+  - validação do formulário (`setError`) e o “Enviando…” também são traduzidos via `tr()`.
+- Idioma gerado por JS (mensagens, rótulos ARIA) segue a mesma cache — WhatsApp do consultor
+  permanece em português (é a equipe que atende).
+- **Inglês australiano não existe no Google Translate** (há um único “English”); se quiser uma
+  variante en-AU com grafia australiana, dá para criar um dicionário próprio depois.
+- Evento no `dataLayer`: `lang_change` com `{ lang }`.
 
 ---
 
@@ -227,7 +274,9 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 - **Auditoria Lighthouse (local):** Acessibilidade 100 · Boas Práticas 100 · SEO 100.
 
 Checklist antes do ar:
-- [ ] `whatsappNumber`, `crmEndpoint` e `gtmId` preenchidos
+- [ ] `whatsappNumber`, `gtmId` e **`metaPixelId`** preenchidos
+- [ ] **`leadfyId`** (IDENTIFICADOR enviado pela suporte da Leadfy) ou `crmEndpoint` preenchido
+- [ ] testar o formulário de ponta a ponta e confirmar o lead chegando no painel da Leadfy
 - [ ] domínio real no `canonical`, Open Graph, `robots.txt` e `sitemap.xml`
 - [ ] CRECI, telefone e endereço atualizados no rodapé
 - [ ] imagens e vídeo definitivos do empreendimento
@@ -237,6 +286,7 @@ Checklist antes do ar:
       do encarregado foram **omitidas de propósito**: inclua só com autorização de uso dos dados
 - [ ] revisar prazos de retenção e foro com o jurídico
 - [ ] testar o banner de cookies (aceitar, recarregar, recusar, reabrir pelo rodapé)
+- [ ] trocar de idioma com e sem cookies aceitos (deve pedir consentimento primeiro)
 - [ ] links do Instagram e Facebook do rodapé conferidos (4 páginas)
 
 # loteamentoqualidadeelazer
