@@ -438,7 +438,7 @@
         phone: data.whatsapp.replace(/\D/g, ''),     // alias citado no exemplo da própria documentação
         origem: CONFIG.crmSource,
         tag: 'site',
-        descricao: 'Cadastro pelo site — Santa Bárbara Resort',
+        descricao: 'Loteamento Qualidade de Vida e Lazer - Página Roberto',
         mensagem: 'Solicitação de informações: lotes de 450m² a 2.500m²',
         observacao: 'Página: ' + location.href +
           (Object.keys(utmData).length ? ' | UTM: ' + JSON.stringify(utmData) : '')

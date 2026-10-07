@@ -116,7 +116,7 @@ var CONFIG = {
   "phone": "11988887777",
   "origem": "site_santabarbara",
   "tag": "site",
-  "descricao": "Cadastro pelo site — Santa Bárbara Resort",
+  "descricao": "Loteamento Qualidade de Vida e Lazer - Página Roberto",
   "mensagem": "Solicitação de informações: lotes de 450m² a 2.500m²",
   "observacao": "Página: https://site/ | UTM: {...}"
 }
