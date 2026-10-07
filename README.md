@@ -237,5 +237,6 @@ Checklist antes do ar:
       do encarregado foram **omitidas de propósito**: inclua só com autorização de uso dos dados
 - [ ] revisar prazos de retenção e foro com o jurídico
 - [ ] testar o banner de cookies (aceitar, recarregar, recusar, reabrir pelo rodapé)
+- [ ] links do Instagram e Facebook preenchidos no rodapé (nas 4 páginas) — hoje estão como `#`
 
 # loteamentoqualidadeelazer
