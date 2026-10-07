@@ -208,8 +208,8 @@ var CONFIG = {
 │   ├── css/styles.css      # design system + responsivo (mobile-first)
 │   ├── js/main.js          # CONFIG, GTM, CRM, formulário, galeria, tracking
 │   ├── video/
-│   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (22,5 MB)
-│   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (22,5 MB)
+│   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (720p, 1,4 MB)
+│   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (1080p, 3,3 MB)
 │   └── img/
 │       ├── favicon.png          # símbolo da marca (512×512, palmeira verde sobre branco)
 │       ├── logo-lockup.png      # logo sem slogan (header)
@@ -265,7 +265,7 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 | Arquivo local | Onde aparece | Proporção atual |
 |---|---|---|
 | `assets/img/fotos/hero-poster.jpg` | Fundo do hero (também no `<link rel="preload">`) | 1440×1440 (1:1) |
-| `assets/img/fotos/og-capa.jpg` | `og:image`, `twitter:image` e JSON-LD | 1440×1440 (ideal: 1200×630) |
+| `assets/img/fotos/og-capa.jpg` | `og:image`, `twitter:image` e JSON-LD | 1200×630 (5:2,33 — padrão Open Graph) |
 | `assets/img/fotos/floresta.jpg` | Dobra “O Empreendimento” | 1080×540 (2:1) |
 | `assets/img/fotos/acqua-spa.jpg` | Galeria — Acqua SPA | 1440×1440 (1:1) |
 | `assets/img/fotos/clube.jpg` | Galeria — Clubes | 1440×1440 (1:1) |
@@ -273,15 +273,17 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 | `assets/img/fotos/minigolfe.jpg` | Galeria — Minigolfe | 1440×1440 (1:1) |
 | `assets/img/fotos/lagos.jpg` | Galeria — Lagos | 1000×749 (~4:3) |
 | `assets/img/fotos/plaza.jpg` | Dobra “Comodidade” (Plaza) | 1440×1440 (1:1) |
-| `assets/video/hero-720.mp4` | Vídeo do hero — celular (≤ 768 px / conexão lenta) | 1920×1080 (22,5 MB) |
-| `assets/video/hero-1080.mp4` | Vídeo do hero — desktop | 1920×1080 (22,5 MB) |
+| `assets/video/hero-720.mp4` | Vídeo do hero — celular (≤ 768 px / conexão lenta) | 1280×720 (1,4 MB) |
+| `assets/video/hero-1080.mp4` | Vídeo do hero — desktop | 1920×1080 (3,3 MB) |
 
 > As fotos estão em **JPEG** e o layout recorta sozinho via `object-fit: cover`,
 > então qualquer proporção funciona — mas quanto mais próxima da caixa, melhor.
-> Para `og:image` o recomendado é **1200×630** (hoje é 1440×1440).
-> **Atenção:** `hero-720.mp4` e `hero-1080.mp4` estão **idênticos** (1920×1080,
-> 22,5 MB cada) — o ideal é gerar uma versão leve de ~720p (~3 MB) para o celular,
-> que é quem mais sofre com arquivo pesado.
+> Para `og:image` o recomendado é **1200×630** (é o tamanho aplicado).
+> **Vídeo:** as duas versões foram transcodificadas (ffmpeg, H.264 CRF 23, ~8 s,
+> **sem áudio** — o hero toca mudo): `hero-720.mp4` 1280×720 (1,4 MB) e
+> `hero-1080.mp4` 1920×1080 (3,3 MB). Para um clipe novo, gere as duas versões
+> assim (mantendo ~8 s e `faststart`), ex.:
+> `ffmpeg -i entrada.mp4 -vf scale=-2:720 -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -an -movflags +faststart hero-720.mp4`
 
 | Outros assets | Arquivo | Como trocar |
 |---|---|---|
@@ -343,7 +345,7 @@ mais simples da HostGator.
 
 ### 6.1 Pacote de upload
 ZIP com `.htaccess` + `favicon.ico` + `index.html` + as 3 páginas legais + `robots.txt` +
-`sitemap.xml` + pasta `assets/` com os pacotes de idioma (**38 arquivos, ~46,5 MB**).
+`sitemap.xml` + pasta `assets/` com os pacotes de idioma (**38 arquivos, ~8,5 MB**).
 Sem `.git` e sem `README`.
 
 ```powershell
@@ -412,7 +414,7 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   fazer *Purge Everything* no CF, o que exige login)
 - **Duas proteções contra cache velho:**
   1. **cache-busting por query string** — as 4 páginas HTML referenciam
-     `assets/css/styles.css?v=20261007d` e `assets/js/main.js?v=20261007d`;
+     `assets/css/styles.css?v=20261007e` e `assets/js/main.js?v=20261007e`;
      como o HTML **não** é cacheado (`cf-cache-status: DYNAMIC`, `max-age=0`),
      cada upload de HTML entrega as URLs novas → CF busca os arquivos no origin;
   2. **`.htaccess` manda `Cloudflare-CDN-Cache-Control: no-cache`** para
@@ -426,9 +428,9 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - ⚠️ **Ao alterar `styles.css` ou `main.js`: aumente a `?v=` nas 4 páginas**
   (`index.html`, `lgpd.html`, `politica-de-privacidade.html`, `termos-de-uso.html`)
   e suba os 4 HTMLs junto com o arquivo alterado — formato `?v=AAAAMMDD` (+ letra
-  se houver mais de uma mudança no mesmo dia; versão atual: `20261007d`)
+  se houver mais de uma mudança no mesmo dia; versão atual: `20261007e`)
 - Conferência rápida: abrir
-  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007d`
+  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007e`
   e procurar o marcador da última alteração
 
 ### 6.5 Status pós-publicação

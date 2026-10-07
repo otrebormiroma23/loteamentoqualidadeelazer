@@ -271,8 +271,9 @@
 
     var small = window.matchMedia('(max-width: 760px)').matches;
     var src = small
-      ? 'assets/video/hero-720.mp4'   // versão mobile (hoje: idêntico ao 1080 — 22,5 MB)
-      : 'assets/video/hero-1080.mp4'; // versão desktop (22,5 MB)
+      // ?v= quebra o cache do CDN (a Cloudflare guarda .mp4 por 180 dias na borda)
+      ? 'assets/video/hero-720.mp4?v=20261007e'   // versão mobile (720p sem áudio — 1,4 MB)
+      : 'assets/video/hero-1080.mp4?v=20261007e'; // versão desktop (1080p sem áudio — 3,3 MB)
 
     var start = function () {
       var s = document.createElement('source');
