@@ -325,6 +325,25 @@ Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
 4. **Enviar → Enviar arquivo** → escolha o ZIP → Upload → feche a aba
 5. Selecione o ZIP → **Extrair** → OK → delete o ZIP
 
+### 6.2.1 Substituindo o site WordPress que já está no domínio
+O domínio `loteamentoqualidadeelazer.com.br` já publica um **WordPress antigo**.
+Procedimento seguro (não afeta caixas de e-mail do domínio):
+
+1. **Backup completo**
+   - File Manager → `public_html` → selecione tudo → **Comprimir (ZIP)** →
+     renomeie para `backup-site-antigo.zip` → **Baixar** para o seu computador
+   - (Opcional, para não perder o conteúdo) cPanel → **phpMyAdmin** → banco do
+     WordPress → **Exportar** → SQL → Baixar
+2. **Tirar o WordPress do caminho:** cPanel → File Manager → entre na **pasta inicial
+   (Home)**, crie `backup-site-antigo/` (fora do `public_html`) e **Mover** para lá
+   todo o conteúdo de `public_html` (`wp-admin`, `wp-content`, `wp-config.php`,
+   `.htaccess` do WP, `index.php` etc.)
+3. **Publicar o novo site:** siga o passo 6.2 (upload + extrair o ZIP na `public_html`)
+4. SSL → AutoSSL → conferir se o cadeado continua verde
+
+> Os endereços antigos (`/wp-admin`, páginas do WordPress) deixam de existir —
+> se houver SEO a preservar, dá para criar redireções 301 depois.
+
 ### 6.3 HTTPS
 - cPanel → **SSL/TLS → Emitir certificado** (ou “AutoSSL”) → Let's Encrypt → Emitir
 - Ative o redirecionamento automático para HTTPS (o `.htaccess` também força)
@@ -338,6 +357,8 @@ Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
   comentada no próprio arquivo, caso queira inverter
 
 ### 6.5 Depois do primeiro upload
+- [ ] **antes de mexer no `public_html`:** backup do WordPress antigo (ZIP de tudo +
+      export SQL no phpMyAdmin) e WordPress movido para `backup-site-antigo/` (fora da web)
 - [ ] abrir `https://loteamentoqualidadeelazer.com.br/` e conferir fotos, vídeo, formulário e WhatsApp
 - [x] domínio aplicado em todas as URLs (`canonical`, `og:url`, `og:image`, JSON-LD,
       `robots.txt`, `sitemap.xml`) — `https://loteamentoqualidadeelazer.com.br/`
