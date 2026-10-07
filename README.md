@@ -182,8 +182,8 @@ var CONFIG = {
 │   ├── css/styles.css      # design system + responsivo (mobile-first)
 │   ├── js/main.js          # CONFIG, GTM, CRM, formulário, galeria, tracking
 │   ├── video/
-│   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (2,7 MB)
-│   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (5,2 MB)
+│   │   ├── hero-720.mp4        # vídeo do hero — versão mobile (22,5 MB)
+│   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (22,5 MB)
 │   └── img/
 │       ├── favicon.png          # símbolo da marca (512×512)
 │       ├── logo-lockup.png      # logo sem slogan (header)
@@ -192,15 +192,15 @@ var CONFIG = {
 │       ├── logo-santa-barbara.png # original 3508×2480 (fonte para novos cortes)
 │       ├── palm-frond.svg       # overlay gráfico de folha de palmeira
 │       └── fotos/               # TODAS as fotos do site (troque mantendo o nome)
-│           ├── hero-poster.webp # capa do hero (1400×788)
-│           ├── og-capa.jpg      # imagem de compartilhamento (1200×630)
-│           ├── floresta.webp    # O Empreendimento (1000×667)
-│           ├── acqua-spa.webp   # Galeria — Acqua SPA (1100×1650)
-│           ├── clube.webp       # Galeria — Clubes (700×394)
-│           ├── ecopista.webp    # Galeria — Ecopista (700×933)
-│           ├── minigolfe.webp   # Galeria — Minigolfe (900×675)
-│           ├── lagos.webp       # Galeria — Lagos (900×1300)
-│           └── plaza.webp       # Comodidade / Plaza (1100×825)
+│           ├── hero-poster.jpg  # capa do hero (1440×1440)
+│           ├── og-capa.jpg      # imagem de compartilhamento (1440×1440)
+│           ├── floresta.jpg     # O Empreendimento (1080×540)
+│           ├── acqua-spa.jpg    # Galeria — Acqua SPA (1440×1440)
+│           ├── clube.jpg        # Galeria — Clubes (1440×1440)
+│           ├── ecopista.jpg     # Galeria — Ecopista (1440×1440)
+│           ├── minigolfe.jpg    # Galeria — Minigolfe (1440×1440)
+│           ├── lagos.jpg        # Galeria — Lagos (1000×749)
+│           └── plaza.jpg        # Comodidade / Plaza (1440×1440)
 ├── robots.txt
 ├── sitemap.xml
 └── README.md
@@ -232,21 +232,24 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 
 | Arquivo local | Onde aparece | Proporção atual |
 |---|---|---|
-| `assets/img/fotos/hero-poster.webp` | Fundo do hero (também no `<link rel="preload">`) | 1400×788 (16:9) |
-| `assets/img/fotos/og-capa.jpg` | `og:image`, `twitter:image` e JSON-LD | 1200×630 |
-| `assets/img/fotos/floresta.webp` | Dobra “O Empreendimento” | 1000×667 (3:2) |
-| `assets/img/fotos/acqua-spa.webp` | Galeria — Acqua SPA | 1100×1650 (2:3) |
-| `assets/img/fotos/clube.webp` | Galeria — Clubes | 700×394 (16:9) |
-| `assets/img/fotos/ecopista.webp` | Galeria — Ecopista | 700×933 (3:4) |
-| `assets/img/fotos/minigolfe.webp` | Galeria — Minigolfe | 900×675 (4:3) |
-| `assets/img/fotos/lagos.webp` | Galeria — Lagos | 900×1300 (9:13) |
-| `assets/img/fotos/plaza.webp` | Dobra “Comodidade” (Plaza) | 1100×825 (4:3) |
-| `assets/video/hero-720.mp4` | Vídeo do hero — celular (≤ 768 px / conexão lenta) | 1280×720 |
-| `assets/video/hero-1080.mp4` | Vídeo do hero — desktop | 1920×1080 |
+| `assets/img/fotos/hero-poster.jpg` | Fundo do hero (também no `<link rel="preload">`) | 1440×1440 (1:1) |
+| `assets/img/fotos/og-capa.jpg` | `og:image`, `twitter:image` e JSON-LD | 1440×1440 (ideal: 1200×630) |
+| `assets/img/fotos/floresta.jpg` | Dobra “O Empreendimento” | 1080×540 (2:1) |
+| `assets/img/fotos/acqua-spa.jpg` | Galeria — Acqua SPA | 1440×1440 (1:1) |
+| `assets/img/fotos/clube.jpg` | Galeria — Clubes | 1440×1440 (1:1) |
+| `assets/img/fotos/ecopista.jpg` | Galeria — Ecopista | 1440×1440 (1:1) |
+| `assets/img/fotos/minigolfe.jpg` | Galeria — Minigolfe | 1440×1440 (1:1) |
+| `assets/img/fotos/lagos.jpg` | Galeria — Lagos | 1000×749 (~4:3) |
+| `assets/img/fotos/plaza.jpg` | Dobra “Comodidade” (Plaza) | 1440×1440 (1:1) |
+| `assets/video/hero-720.mp4` | Vídeo do hero — celular (≤ 768 px / conexão lenta) | 1920×1080 (22,5 MB) |
+| `assets/video/hero-1080.mp4` | Vídeo do hero — desktop | 1920×1080 (22,5 MB) |
 
-> As imagens estão em **WebP** (padrão exigido no PRD) e o `og-capa.jpg` em JPEG,
-> formatos aceitos por redes sociais e crawlers. Exporte os arquivos novos nesses
-> mesmos formatos — ou ajuste a extensão no `index.html` se preferir JPG/PNG.
+> As fotos estão em **JPEG** e o layout recorta sozinho via `object-fit: cover`,
+> então qualquer proporção funciona — mas quanto mais próxima da caixa, melhor.
+> Para `og:image` o recomendado é **1200×630** (hoje é 1440×1440).
+> **Atenção:** `hero-720.mp4` e `hero-1080.mp4` estão **idênticos** (1920×1080,
+> 22,5 MB cada) — o ideal é gerar uma versão leve de ~720p (~3 MB) para o celular,
+> que é quem mais sofre com arquivo pesado.
 
 | Outros assets | Arquivo | Como trocar |
 |---|---|---|

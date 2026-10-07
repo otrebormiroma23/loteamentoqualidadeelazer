@@ -268,8 +268,8 @@
 
     var small = window.matchMedia('(max-width: 760px)').matches;
     var src = small
-      ? 'assets/video/hero-720.mp4'   // 2,7 MB
-      : 'assets/video/hero-1080.mp4'; // 5,2 MB
+      ? 'assets/video/hero-720.mp4'   // versão mobile (hoje: idêntico ao 1080 — 22,5 MB)
+      : 'assets/video/hero-1080.mp4'; // versão desktop (22,5 MB)
 
     var start = function () {
       var s = document.createElement('source');
