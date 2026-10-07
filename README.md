@@ -117,10 +117,17 @@ var CONFIG = {
   "origem": "site_santabarbara",
   "tag": "site",
   "descricao": "Loteamento Qualidade de Vida e Lazer - Página Roberto",
-  "mensagem": "Solicitação de informações: lotes de 450m² a 2.500m²",
-  "observacao": "Página: https://site/ | UTM: {...}"
+  "mensagem": "",
+  "observacao": ""
 }
 ```
+
+> `mensagem` e `observacao` ficam **vazias a pedido do cliente** — nada de
+> "Solicitação de informações: ..." nem de "Página: <url>" no painel. A API aceita
+> `''` (testado: HTTP 200). ⚠️ Se um dia aparecer erro 500 na API, quase sempre é
+> encoding de acento no teste manual (o PowerShell manda Latin1): envie os bytes em
+> UTF-8 com `Content-Type: application/json; charset=utf-8`. O navegador envia
+> UTF-8 naturalmente.
 
 3. Alternativa (CRM próprio): preencha `crmEndpoint` — nesse caso o payload é o JSON genérico
    (`nome`, `email`, `whatsapp`, `page`, `utm_*`, `gclid`, `fbclid`, `source`, `timestamp`).
@@ -385,15 +392,16 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   visitantes continuam vendo a versão antiga até o cache expirar (ou até alguém
   fazer *Purge Everything* no CF, o que exige login)
 - Enquanto não há acesso ao CF, o site usa **cache-busting por query string**:
-  as 4 páginas HTML referenciam `assets/css/styles.css?v=20261007` e
-  `assets/js/main.js?v=20261007`. Como o HTML **não** é cacheado
+  as 4 páginas HTML referenciam `assets/css/styles.css?v=20261007b` e
+  `assets/js/main.js?v=20261007b`. Como o HTML **não** é cacheado
   (`cf-cache-status: DYNAMIC`, `max-age=0`), cada upload de HTML entrega as URLs
   novas → CF busca os arquivos no origin na hora
 - ⚠️ **Ao alterar `styles.css` ou `main.js`: aumente a `?v=` nas 4 páginas**
   (`index.html`, `lgpd.html`, `politica-de-privacidade.html`, `termos-de-uso.html`)
-  e suba os 4 HTMLs — normalmente `?v=AAAAMMDD` da data da mudança
+  e suba os 4 HTMLs junto com o arquivo alterado — formato `?v=AAAAMMDD` (+ letra
+  se houver mais de uma mudança no mesmo dia; versão atual: `20261007b`)
 - Conferência rápida: abrir
-  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=AAAAMMDD`
+  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007b`
   e procurar o marcador da última alteração
 
 ### 6.5 Status pós-publicação

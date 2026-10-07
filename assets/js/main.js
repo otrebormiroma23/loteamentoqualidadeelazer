@@ -439,9 +439,11 @@
         origem: CONFIG.crmSource,
         tag: 'site',
         descricao: 'Loteamento Qualidade de Vida e Lazer - Página Roberto',
-        mensagem: 'Solicitação de informações: lotes de 450m² a 2.500m²',
-        observacao: 'Página: ' + location.href +
-          (Object.keys(utmData).length ? ' | UTM: ' + JSON.stringify(utmData) : '')
+        // mensagem/observacao em branco a pedido do cliente (nada de
+        // "Solicitação de informações..." nem "Página: <url>").
+        // A API aceita string vazia — testado: HTTP 200.
+        mensagem: '',
+        observacao: ''
       };
 
       var success = function () {
