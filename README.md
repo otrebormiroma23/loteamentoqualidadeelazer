@@ -38,7 +38,7 @@ var CONFIG = {
   crmEndpoint: '',      // URL da API do CRM (POST JSON)
   crmSource: 'site_santabarbara',
   tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU', // Tour 360º (modal com iframe)
-  phone: '+5511999999999'
+  phone: '+5511918708781'
 };
 ```
 
@@ -46,6 +46,9 @@ var CONFIG = {
 1. Preencha `whatsappNumber` no formato `55` + DDD + número (ex.: `5511999999999`).
 2. Todos os CTAs passam a apontar para `wa.me/<numero>?text=<mensagem>`:
    botão flutuante, botão principal, rodapé, barra mobile e pós-formulário.
+3. **Exceção:** o link "WhatsApp" do rodapé (`#footerWhats`) usa endereço próprio
+   `https://wa.me/message/...` gravado direto no `index.html` — por isso ele não é
+   sobrescrito pelo CONFIG (sem mensagem pré-preenchida).
 
 ### 2.2 Google Tag Manager / Pixels
 1. Preencha `gtmId` com o ID do container (ex.: `GTM-ABC1234`).

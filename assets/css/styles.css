@@ -441,7 +441,6 @@ h3{font-family:var(--font-ui);font-size:1.06rem;font-weight:500;letter-spacing:.
 .creci{color:rgba(255,255,255,.62);font-size:.85rem}
 .footer-bottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:26px;font-size:.82rem;color:rgba(255,255,255,.62)}
 .footer-bottom p{margin:0}
-.footer-disclaimer{max-width:52ch}
 
 /* ---------- WhatsApp flutuante + barra mobile ---------- */
 .whats-float{

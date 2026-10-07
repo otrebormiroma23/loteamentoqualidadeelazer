@@ -31,7 +31,7 @@
     tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU',
 
     // Telefone para clique (formato tel:)
-    phone: '+5511999999999'
+    phone: '+5511918708781'
   };
 
   /* =========================================================
@@ -81,7 +81,8 @@
   function bindLinks() {
     var wa = buildWhatsAppUrl();
 
-    ['whatsFloat', 'ctaMain', 'ctaFooter', 'mobileWhats', 'footerWhats', 'successWhats'].forEach(function (id) {
+    // footerWhats não entra nesta lista: ele tem link próprio (wa.me/message) direto no HTML
+    ['whatsFloat', 'ctaMain', 'ctaFooter', 'mobileWhats', 'successWhats'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.href = wa;
     });
