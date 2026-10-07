@@ -318,8 +318,13 @@ Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
 ```
 
 ### 6.2 Upload (cPanel → File Manager)
-1. **cPanel → Gerenciador de Arquivos** → entre em `public_html` (domínio principal)
-   ou `public_html/seudominio.com.br` (domínio adicional/adon)
+> **Atenção — descubra a pasta certa antes de subir:** o arquivo do site não fica
+> sempre em `public_html`. Nesta conta, o domínio `loteamentoqualidadeelazer.com.br`
+> usa a pasta **`public_html/loteamentoqualidadeelazer/`** (pasta criada pela HostGator
+> ao cadastrar o domínio). Confira em cPanel → **Domains** → coluna *Document Root*.
+
+1. **cPanel → Gerenciador de Arquivos** → entre na pasta documentada acima
+   (domínio principal → `public_html`; domínio adicional → `public_html/<dominio>`)
 2. **Configurações → Mostrar arquivos ocultos** (para ver o `.htaccess`) → Save
 3. Apague o que a HostGator deixou: `default.html`, `cgi-bin/`, `index2.html`
 4. **Enviar → Enviar arquivo** → escolha o ZIP → Upload → feche a aba
@@ -345,8 +350,13 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 > se houver SEO a preservar, dá para criar redireções 301 depois.
 
 ### 6.3 HTTPS
-- cPanel → **SSL/TLS → Emitir certificado** (ou “AutoSSL”) → Let's Encrypt → Emitir
-- Ative o redirecionamento automático para HTTPS (o `.htaccess` também força)
+- O DNS do domínio está no **Cloudflare** (`shane/hadlee.ns.cloudflare.com`) — por isso
+  o HTTPS já funciona e renova sozinho (certificado Google Trust Services, via Cloudflare)
+- ⚠️ A tela **cPanel → SSL/TLS → “Issue a certificate”** mostra *“DNS-based DCV failed”*:
+  é normal, o cPanel não consegue gravar TXT no DNS do Cloudflare. **Não emitir nada lá**
+- ⚠️ Se aparecer erro roxo do Cloudflare (522/526), confira em **Cloudflare → DNS →
+  Records** que o registro A de origem aponta para o IP do servidor HostGator
+  (cPanel → *Server IP*)
 
 ### 6.4 `.htaccess` (criado na raiz)
 - força HTTPS, `DirectoryIndex index.html`, `Options -Indexes`
@@ -356,18 +366,25 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   (oficial: `loteamentoqualidadeelazer.com.br`); a variante “com `www`” fica
   comentada no próprio arquivo, caso queira inverter
 
-### 6.5 Depois do primeiro upload
-- [ ] **antes de mexer no `public_html`:** backup do WordPress antigo (ZIP de tudo +
-      export SQL no phpMyAdmin) e WordPress movido para `backup-site-antigo/` (fora da web)
-- [ ] abrir `https://loteamentoqualidadeelazer.com.br/` e conferir fotos, vídeo, formulário e WhatsApp
+### 6.5 Status pós-publicação
+- [x] **PUBLICADO em 07/10/2026** — https://loteamentoqualidadeelazer.com.br/
+      (arquivos em `public_html/loteamentoqualidadeelazer/`; WordPress antigo removido)
+- [x] conferido no ar: home + 3 páginas legais + `robots.txt` + `sitemap.xml`,
+      10/10 fotos, vídeo do hero, gzip/cache/headers do `.htaccess`
+- [x] redirecionamentos `http → https` e `www → sem www` (301) funcionando
 - [x] domínio aplicado em todas as URLs (`canonical`, `og:url`, `og:image`, JSON-LD,
       `robots.txt`, `sitemap.xml`) — `https://loteamentoqualidadeelazer.com.br/`
-- [x] `.htaccess` forçando `https://` e redirecionando `www.` → sem `www`
+- [x] Meta Pixel no ar (`signals/config/1128316885943842`), só após consentimento
+- [x] idiomas no ar (11 opções; EN → PT restaura o texto original)
+- [x] Lighthouse no ar: Acessibilidade 100 · Boas Práticas 100 · SEO 100 (0 falhas)
+- [ ] confirmar se o **backup do WordPress** (ZIP) foi baixado antes da substituição
 - [ ] Google Search Console → adicionar site → enviar `sitemap.xml`
-- [ ] conferir Meta Pixel e GTM no navegador (depois de aceitar cookies)
-- [ ] testar o formulário no celular (lead chegando na Leadfy)
+- [ ] **`gtmId`** preenchido
+- [ ] **`leadfyId`** preenchido + teste de ponta a ponta do formulário (celular)
+- [ ] teste em celular real (menu de idioma, formulário, vídeo)
 
-**Atualizações futuras:** repita só o passo 6.2 com os arquivos alterados
-(normalmente só `index.html` ou `assets/`).
+**Atualizações futuras:** repita o passo 6.2 enviando os arquivos alterados
+(normalmente só `index.html`, `assets/` ou `.htaccess`) para a pasta document root
+do domínio — `public_html/loteamentoqualidadeelazer/` nesta conta.
 
 # loteamentoqualidadeelazer
