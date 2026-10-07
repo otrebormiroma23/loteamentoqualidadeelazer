@@ -114,7 +114,7 @@ var CONFIG = {
   "telefone": "11988887777",
   "name": "Maria Silva",
   "phone": "11988887777",
-  "origem": "site_santabarbara",
+  "origem": "Site",
   "tag": "site",
   "descricao": "Loteamento Qualidade de Vida e Lazer - Página Roberto",
   "mensagem": "",
@@ -155,27 +155,37 @@ var CONFIG = {
   ser reaberta pelo link **“Preferências de cookies”** do rodapé (`#cookiePrefs`).
 - No GTM, configure os triggers assumindo **Consent Mode**: `ad_storage`,
   `ad_user_data`, `ad_personalization` e `analytics_storage`.
-- O **tradutor do site** também é terceiro: sem aceite, escolher um idioma reabre o aviso com a
-  linha “Para usar o tradutor automático do site, é preciso aceitar os cookies.” — e o idioma
-  escolhido é aplicado assim que o visitante aceitar.
+- O **tradutor do site funciona sem precisar de aceite de cookies**: os pacotes de idioma
+  (`assets/js/tr/`) são recurso do próprio domínio, não de terceiro. Só o **fallback** usa o
+  Google Translate (terceiro) — e ele, sem aceite, reabre o aviso com a linha “Para usar o
+  tradutor automático do site, é preciso aceitar os cookies.”, aplicando o idioma escolhido
+  assim que o visitante aceitar.
 
 ### 2.6 Idiomas (seletor em todas as páginas)
 - Botão com gloco + sigla (`PT`) ao lado do CTA do header do `index.html` e no topo das
   páginas legais (`.legal-top`). Idiomas disponíveis:
   **Português (origem), English, Español, Français, Italiano, Deutsch, 日本語, 中文, 한국어,
   Русский, Nederlands**.
-- O tradutor usa o **motor do Google Translate** (`translate.googleapis.com`, `client=gtx`),
-  porém sem o widget/banner do Google — o layout continua 100% nosso, sem barra do Google e
-  sem deslocamento de página. *(O widget oficial `TranslateElement` foi testado e ficou travado
-  em “Tradução em andamento (0%)” também em página isolada.)*
+- **Tradução embutida no site**: cada idioma tem um pacote JSON em `assets/js/tr/<idioma>.json`
+  (10 pacotes × 177 textos, ~148 kB no total), gerado com o motor do Google Translate mas
+  servido **do próprio domínio** — a troca fica instantânea (~0,2–0,9 s), não depende do Google
+  na hora do uso (evita throttling em IP de celular), não desloca a página e funciona **antes**
+  de aceitar os cookies. Sem widget/banner do Google — o layout continua 100% nosso.
+  *(O widget oficial `TranslateElement` foi testado e ficou travado em “Tradução em andamento
+  (0%)” também em página isolada.)*
 - Funcionamento:
   - coleta automática de nós de texto + atributos (`alt`, `placeholder`, `aria-label`, `title`)
     + `<title>` + `meta description` — números, telefone e código ficam de fora;
-  - busca em blocos de até 10 textos, 3 blocos em paralelo (primeira troca ~5–15 s, com
-    spinner no botão; as trocas seguintes são instantâneas a partir do cache);
+  - ao **abrir o menu de idiomas** pela 1ª vez os 10 pacotes são pré-aquecidos no cache do
+    navegador (fetch silencioso, ~148 kB);
+  - a troca carrega o pacote local e aplica; textos que não existam no pacote (ex.: texto novo
+    no HTML) são completados pelo **Google Translate em tempo real** (`translate.googleapis.com`,
+    `client=gtx`, blocos de até 10 textos em paralelo) — **só com consentimento** de cookies;
   - cache por idioma em `localStorage` (`sb_tr_<idioma>`, ~14 KB por idioma) e idioma salvo em
     `sb_lang`; volta ao português restaura o texto original **byte a byte**;
-  - validação do formulário (`setError`) e o “Enviando…” também são traduzidos via `tr()`.
+  - validação do formulário (`setError`) e o “Enviando…” também são traduzidos via `tr()`;
+  - **regenerar pacotes**: depois de alterar textos em português, me avise — o JSON é regenerado
+    a partir da página (enquanto isso, o fallback do Google cobre o texto novo no visitante).
 - Idioma gerado por JS (mensagens, rótulos ARIA) segue a mesma cache — WhatsApp do consultor
   permanece em português (é a equipe que atende).
 - **Inglês australiano não existe no Google Translate** (há um único “English”); se quiser uma
@@ -325,7 +335,8 @@ mais simples da HostGator.
 
 ### 6.1 Pacote de upload
 ZIP com `.htaccess` + `index.html` + as 3 páginas legais + `robots.txt` +
-`sitemap.xml` + pasta `assets/` (**26 arquivos, ~46,6 MB**). Sem `.git` e sem `README`.
+`sitemap.xml` + pasta `assets/` com os pacotes de idioma (**36 arquivos, ~46,7 MB**).
+Sem `.git` e sem `README`.
 
 ```powershell
 # gerar/atualizar o ZIP (PowerShell, na raiz do projeto)
@@ -413,7 +424,8 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - [x] domínio aplicado em todas as URLs (`canonical`, `og:url`, `og:image`, JSON-LD,
       `robots.txt`, `sitemap.xml`) — `https://loteamentoqualidadeelazer.com.br/`
 - [x] Meta Pixel no ar (`signals/config/1128316885943842`), só após consentimento
-- [x] idiomas no ar (11 opções; EN → PT restaura o texto original)
+- [x] idiomas no ar (11 opções; pacotes locais `assets/js/tr/*.json` — troca instantânea,
+      sem depender do Google e sem exigir consentimento; EN → PT restaura o texto original)
 - [x] Lighthouse no ar: Acessibilidade 100 · Boas Práticas 100 · SEO 100 (0 falhas)
 - [x] **backup do site antigo localizado** no Downloads antes da substituição:
       `well-known.zip` (arquivos do WordPress, 16.606 entradas) e

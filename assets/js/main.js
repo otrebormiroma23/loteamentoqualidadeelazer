@@ -436,7 +436,8 @@
         telefone: data.whatsapp.replace(/\D/g, ''),
         name: data.nome,                             // alias citado no exemplo da própria documentação
         phone: data.whatsapp.replace(/\D/g, ''),     // alias citado no exemplo da própria documentação
-        origem: CONFIG.crmSource,
+        origem: 'Site',                             // exibido no painel como "Site / Internet"
+                                                    // (valor fora da lista conhecida vira "Não definido")
         tag: 'site',
         descricao: 'Loteamento Qualidade de Vida e Lazer - Página Roberto',
         // mensagem/observacao em branco a pedido do cliente (nada de
@@ -726,6 +727,29 @@
     try { localStorage.setItem(TR_KEY + lang, JSON.stringify(cacheTr[lang])); } catch (e) { /* modo privado */ }
   }
 
+  /* ---- pacote local de tradução (assets/js/tr/<lang>.json) ----
+     Primeira opção: vem do próprio domínio, carrega instantâneo, não
+     depende do Google (que faz throttling em IP móvel) e não exige
+     consentimento de cookies (é recurso do próprio site). */
+  function carregarPacoteLocal(lang) {
+    return fetch('assets/js/tr/' + lang + '.json')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (obj) {
+        var c = lerCache(lang);
+        Object.keys(obj).forEach(function (k) { if (c[k] === undefined) c[k] = obj[k]; });
+        gravarCache(lang);
+      });
+  }
+
+  /* Aquece o cache do navegador dos 10 pacotes quando o visitante abre o
+     menu de idiomas (10 × ~15 kB) — aí a troca fica instantânea. */
+  function preCarregarPacotes() {
+    Object.keys(LANG_LABEL).forEach(function (l) {
+      if (l === 'pt') return;
+      fetch('assets/js/tr/' + l + '.json').catch(function () { /* silencioso */ });
+    });
+  }
+
   /* ---- requisições ao Google Translate ---- */
   function urlTraducao(lang, texto) {
     return 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=' +
@@ -829,18 +853,6 @@
   function trocarIdioma(lang) {
     if (traduzindo || lang === idiomaAtual) return;
 
-    if (lang !== 'pt' && readConsent() !== 'granted') {
-      // Sem consentimento não consultamos serviços de terceiros
-      pendingLang = lang;
-      var hint = $('#cookieHint');
-      if (hint) hint.hidden = false;
-      var bar = $('#cookieBar');
-      if (bar) bar.hidden = false;
-      var acc = $('#cookieAccept');
-      if (acc) acc.focus();
-      return;
-    }
-
     var btn = $('#langBtn');
     var concluir = function () {
       aplicarIdioma(lang);
@@ -854,6 +866,7 @@
       track('lang_change', { lang: lang });
     };
 
+    var anterior = idiomaAtual;
     idiomaAtual = lang;
 
     if (lang === 'pt') { concluir(); return; }
@@ -861,11 +874,34 @@
     traduzindo = true;
     if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
 
-    traduzirPendentes(lang)
+    // 1) pacote local do próprio site — rápido e sem terceiros (não exige consentimento)
+    carregarPacoteLocal(lang)
+      .then(function () {
+        // 2) completa eventual texto novo que não exista no pacote (só com consentimento)
+        if (readConsent() === 'granted') return traduzirPendentes(lang);
+      })
       .then(concluir)
       .catch(function (err) {
-        console.warn('[Santa Bárbara] Falha ao traduzir:', err);
-        concluir();   // aplica o que já estava em cache; o resto permanece em PT
+        console.warn('[Santa Bárbara] Pacote local indisponível:', err);
+        if (readConsent() === 'granted') {
+          // fallback: Google Translate em tempo real (como antes)
+          traduzirPendentes(lang).then(concluir).catch(function (e) {
+            console.warn('[Santa Bárbara] Falha ao traduzir:', e);
+            concluir();   // aplica o que já estava em cache; o resto permanece em PT
+          });
+        } else {
+          // sem pacote local e sem consentimento: pede cookies e mantém o idioma atual
+          idiomaAtual = anterior;
+          traduzindo = false;
+          if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+          pendingLang = lang;
+          var hint = $('#cookieHint');
+          if (hint) hint.hidden = false;
+          var bar = $('#cookieBar');
+          if (bar) bar.hidden = false;
+          var acc = $('#cookieAccept');
+          if (acc) acc.focus();
+        }
       });
   }
 
@@ -888,9 +924,12 @@
       btn.setAttribute('aria-expanded', String(state));
     };
 
+    var pacotesAquecidos = false;
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
       open(menu.hidden);
+      // ao abrir o menu pela 1ª vez, aquece os pacotes de idioma
+      if (!pacotesAquecidos) { pacotesAquecidos = true; preCarregarPacotes(); }
     });
 
     menu.addEventListener('click', function (e) {
