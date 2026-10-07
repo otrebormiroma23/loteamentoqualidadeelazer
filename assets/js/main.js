@@ -30,7 +30,7 @@
 
     // ID do Meta Pixel (Facebook/Instagram) — ex.: '123456789012345'.
     // Deixe '' para manter desativado. Só carrega após o aceite de cookies.
-    metaPixelId: '',
+    metaPixelId: '1128316885943842',
 
     // Leadfy — IDENTIFICADOR do webhook de criação de lead.
     // Formatos aceitos: hash da empresa (10 caracteres, ex.: '18952qf65x'),

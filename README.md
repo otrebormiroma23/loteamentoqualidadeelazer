@@ -274,7 +274,9 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 - **Auditoria Lighthouse (local):** Acessibilidade 100 · Boas Práticas 100 · SEO 100.
 
 Checklist antes do ar:
-- [ ] `whatsappNumber`, `gtmId` e **`metaPixelId`** preenchidos
+- [x] `whatsappNumber` preenchido (5511918708781)
+- [x] **`metaPixelId`** preenchido (1128316885943842)
+- [ ] `gtmId` preenchido
 - [ ] **`leadfyId`** (IDENTIFICADOR enviado pela suporte da Leadfy) ou `crmEndpoint` preenchido
 - [ ] testar o formulário de ponta a ponta e confirmar o lead chegando no painel da Leadfy
 - [ ] domínio real no `canonical`, Open Graph, `robots.txt` e `sitemap.xml`
