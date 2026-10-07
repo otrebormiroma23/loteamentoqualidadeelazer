@@ -379,6 +379,23 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   (oficial: `loteamentoqualidadeelazer.com.br`); a variante “com `www`” fica
   comentada no próprio arquivo, caso queira inverter
 
+### 6.4.1 Cache do Cloudflare e versionamento de CSS/JS
+- O CSS/JS é cacheado **1 mês no navegador** + **no bordo do Cloudflare**
+  (`cf-cache-status: HIT`) — ou seja, subir um arquivo novo **não** basta: os
+  visitantes continuam vendo a versão antiga até o cache expirar (ou até alguém
+  fazer *Purge Everything* no CF, o que exige login)
+- Enquanto não há acesso ao CF, o site usa **cache-busting por query string**:
+  as 4 páginas HTML referenciam `assets/css/styles.css?v=20261007` e
+  `assets/js/main.js?v=20261007`. Como o HTML **não** é cacheado
+  (`cf-cache-status: DYNAMIC`, `max-age=0`), cada upload de HTML entrega as URLs
+  novas → CF busca os arquivos no origin na hora
+- ⚠️ **Ao alterar `styles.css` ou `main.js`: aumente a `?v=` nas 4 páginas**
+  (`index.html`, `lgpd.html`, `politica-de-privacidade.html`, `termos-de-uso.html`)
+  e suba os 4 HTMLs — normalmente `?v=AAAAMMDD` da data da mudança
+- Conferência rápida: abrir
+  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=AAAAMMDD`
+  e procurar o marcador da última alteração
+
 ### 6.5 Status pós-publicação
 - [x] **PUBLICADO em 07/10/2026** — https://loteamentoqualidadeelazer.com.br/
       (arquivos em `public_html/loteamentoqualidadeelazer/`; WordPress antigo removido)
