@@ -233,8 +233,8 @@ Checklist antes do ar:
 - [ ] imagens e vídeo definitivos do empreendimento
 - [ ] testar o formulário no celular (máscara de WhatsApp e botão de polegar)
 - [ ] conferir as distâncias da seção Localização com a equipe de vendas
-- [ ] preencher os campos entre **[colchetes]** das páginas legais
-      (razão social, CNPJ, endereço, e-mail do encarregado/DPO e comarca dos Termos)
+- [ ] páginas legais revisadas pelo jurídico — identificação da empresa (razão social/CNPJ) e
+      do encarregado foram **omitidas de propósito**: inclua só com autorização de uso dos dados
 - [ ] revisar prazos de retenção e foro com o jurídico
 - [ ] testar o banner de cookies (aceitar, recarregar, recusar, reabrir pelo rodapé)
 
