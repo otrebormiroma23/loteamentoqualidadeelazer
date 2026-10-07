@@ -16,7 +16,7 @@
     gtmId: '',
 
     // Número do WhatsApp no formato: 55 + DDD + número (sem espaços, sem '+')
-    whatsappNumber: '5511999999999',
+    whatsappNumber: '5511918708781',
 
     // Texto padrão enviado ao clicar em qualquer CTA de WhatsApp
     whatsappMessage: 'Olá! Vim pelo site do Santa Bárbara Resort e gostaria de saber mais sobre os lotes.',
@@ -46,7 +46,9 @@
   }
 
   function initGTM() {
+    if (window.__gtmLoaded) return;
     if (!/^GTM-[A-Z0-9]+$/i.test(CONFIG.gtmId)) return;
+    window.__gtmLoaded = true;
     var s = document.createElement('script');
     s.textContent = '(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":' +
       'new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],' +
@@ -54,6 +56,73 @@
       'j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);' +
       '})(window,document,"script","dataLayer","' + CONFIG.gtmId + '");';
     document.head.appendChild(s);
+  }
+
+  /* =========================================================
+     2.1 CONSENTIMENTO DE COOKIES (LGPD + Google Consent Mode v2)
+     ========================================================= */
+  var CONSENT_KEY = 'sb_cookie_consent';
+
+  function readConsent() {
+    try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+  }
+
+  function writeConsent(value) {
+    try { localStorage.setItem(CONSENT_KEY, value); } catch (e) { /* modo privado */ }
+  }
+
+  // Shim do gtag: só enfileira os comandos de consentimento no dataLayer.
+  // O gtag.js (carregado pelo GTM) consome a fila quando inicializa.
+  function gtag() { window.dataLayer.push(arguments); }
+
+  function consentDefault() {
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      wait_for_update: 500
+    });
+  }
+
+  function consentUpdate(granted) {
+    var value = granted ? 'granted' : 'denied';
+    gtag('consent', 'update', {
+      ad_storage: value,
+      ad_user_data: value,
+      ad_personalization: value,
+      analytics_storage: value
+    });
+  }
+
+  function initConsent() {
+    consentDefault();
+
+    var bar = $('#cookieBar');
+    var choice = readConsent();
+    var show = function () { if (bar) bar.hidden = false; };
+    var hide = function () { if (bar) bar.hidden = true; };
+
+    var apply = function (value) {
+      writeConsent(value);
+      consentUpdate(value === 'granted');
+      if (value === 'granted') initGTM();   // sem aceite, GTM/pixels não são injetados
+      hide();
+      track('cookie_consent', { choice: value });
+    };
+
+    if (bar) {
+      $('#cookieAccept').addEventListener('click', function () { apply('granted'); });
+      $('#cookieReject').addEventListener('click', function () { apply('denied'); });
+    }
+
+    // Link "Cookies" do rodapé reabre as preferências
+    var prefs = $('#cookiePrefs');
+    if (prefs) prefs.addEventListener('click', function (e) { e.preventDefault(); show(); });
+
+    if (choice === 'granted') { consentUpdate(true); initGTM(); hide(); }
+    else if (choice === 'denied') { consentUpdate(false); hide(); }
+    else { show(); } // primeira visita: sem escolha, nada de terceiros
   }
 
   /* =========================================================
@@ -489,7 +558,7 @@
      13. INICIALIZAÇÃO
      ========================================================= */
   function init() {
-    initGTM();
+    initConsent();
     bindLinks();
     initHeader();
     initHeroVideo();

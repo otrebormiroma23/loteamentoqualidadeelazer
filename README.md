@@ -33,7 +33,7 @@ Tudo o que precisa ser preenchido está em **um único lugar**:
 ```js
 var CONFIG = {
   gtmId: '',            // 'GTM-ABC1234'  → Google Tag Manager
-  whatsappNumber: '',   // '5511999999999' → DDI + DDD + número
+  whatsappNumber: '5511918708781', // DDI + DDD + número
   whatsappMessage: '',  // mensagem padrão pré-preenchida
   crmEndpoint: '',      // URL da API do CRM (POST JSON)
   crmSource: 'site_santabarbara',
@@ -43,9 +43,9 @@ var CONFIG = {
 ```
 
 ### 2.1 WhatsApp
-1. Preencha `whatsappNumber` no formato `55` + DDD + número (ex.: `5511999999999`).
-2. Todos os CTAs passam a apontar para `wa.me/<numero>?text=<mensagem>`:
-   botão flutuante, botão principal, rodapé, barra mobile e pós-formulário.
+1. `whatsappNumber` está no formato `55` + DDD + número (ex.: `5511918708781`).
+2. Os CTAs passam a apontar para `wa.me/<numero>?text=<mensagem>`:
+   botão flutuante, botão principal, barra mobile e pós-formulário.
 3. **Exceção:** o link "WhatsApp" do rodapé (`#footerWhats`) usa endereço próprio
    `https://wa.me/message/...` gravado direto no `index.html` — por isso ele não é
    sobrescrito pelo CONFIG (sem mensagem pré-preenchida).
@@ -68,6 +68,7 @@ var CONFIG = {
 | `section_view` | 25% da seção visível | `section` |
 | `scroll_depth` | 25/50/75/100% da página | `depth` |
 | `gallery_open` | abertura do lightbox | `item` |
+| `cookie_consent` | clique em “Aceitar”/“Recusar” cookies | `choice` (`granted` \| `denied`) |
 | `tour_open` | abertura do modal Tour 360º | `source` (`localizacao` \| `rodape`) |
 | `time_on_page` | 30 s na página (lead qualificado) | `seconds` |
 
@@ -110,6 +111,16 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
   (`https://maps.app.goo.gl/...`, em `index.html`, `#mapLink`).
 - `phone` → telefone do rodapé.
 
+### 2.5 Cookies e consentimento (LGPD)
+- O aviso de cookies aparece **na primeira visita**. Sem escolha registrada, o GTM **não é
+  injetado** e nenhum pixel roda — só o estritamente necessário ao site.
+- Ao aceitar: `gtag('consent','update', granted)` é enviado (Consent Mode v2) e o GTM carrega.
+  Ao recusar: nada de terceiros é carregado.
+- A escolha fica em `localStorage` na chave `sb_cookie_consent` (`granted` / `denied`) e pode
+  ser reaberta pelo link **“Preferências de cookies”** do rodapé (`#cookiePrefs`).
+- No GTM, configure os triggers assumindo **Consent Mode**: `ad_storage`,
+  `ad_user_data`, `ad_personalization` e `analytics_storage`.
+
 ---
 
 ## 3. Estrutura do projeto
@@ -117,6 +128,9 @@ direto no GTM — assim o algoritmo recebe dados de qualidade e o CPA cai ao lon
 ```
 /
 ├── index.html              # página única (H1/H2, meta, JSON-LD, seções)
+├── politica-de-privacidade.html  # Política de Privacidade (LGPD)
+├── termos-de-uso.html      # Termos de uso do site
+├── lgpd.html               # Direitos do titular e encarregado (DPO)
 ├── assets/
 │   ├── css/styles.css      # design system + responsivo (mobile-first)
 │   ├── js/main.js          # CONFIG, GTM, CRM, formulário, galeria, tracking
@@ -219,5 +233,9 @@ Checklist antes do ar:
 - [ ] imagens e vídeo definitivos do empreendimento
 - [ ] testar o formulário no celular (máscara de WhatsApp e botão de polegar)
 - [ ] conferir as distâncias da seção Localização com a equipe de vendas
+- [ ] preencher os campos entre **[colchetes]** das páginas legais
+      (razão social, CNPJ, endereço, e-mail do encarregado/DPO e comarca dos Termos)
+- [ ] revisar prazos de retenção e foro com o jurídico
+- [ ] testar o banner de cookies (aceitar, recarregar, recusar, reabrir pelo rodapé)
 
 # loteamentoqualidadeelazer
