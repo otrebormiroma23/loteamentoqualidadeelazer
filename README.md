@@ -32,7 +32,7 @@ Tudo o que precisa ser preenchido está em **um único lugar**:
 
 ```js
 var CONFIG = {
-  gtmId: '',            // 'GTM-ABC1234'  → Google Tag Manager
+  gtmId: 'GTM-KPPPTLXH', // Google Tag Manager (só carrega após aceite de cookies)
   whatsappNumber: '5511918708781', // DDI + DDD + número
   whatsappMessage: '',  // mensagem padrão pré-preenchida
   crmEndpoint: '',      // URL da API do CRM (POST JSON)
@@ -51,8 +51,13 @@ var CONFIG = {
    sobrescrito pelo CONFIG (sem mensagem pré-preenchida).
 
 ### 2.2 Google Tag Manager / Pixels
-1. Preencha `gtmId` com o ID do container (ex.: `GTM-ABC1234`).
-2. O snippet do GTM é injetado automaticamente pelo JS — **não** é preciso colar nada no HTML.
+1. `gtmId` = **`GTM-KPPPTLXH`** (container verificado em 07/10/2026 — `gtm.js` responde 200).
+   O snippet é injetado pelo JS **somente após o aceite de cookies** — nada é colado no HTML.
+2. ⚠️ **O container contém um tag do Meta Pixel duplicado** (o mesmo `1128316885943842` do
+   `CONFIG.metaPixelId`), o que gera o aviso *"Duplicate Pixel ID"* no console e PageView
+   em dobro. **Desative-o no GTM:** Tags → tag do Meta/Facebook → ⋮ → Desativar (ou Excluir)
+   → **Enviar → Publicar**. O pixel oficial é o do `main.js` (consent-gated, com eventos
+   `Lead`/`Contact`/`ViewContent`).
 3. Dentro do GTM, crie os triggers para os seguintes eventos do `dataLayer`:
 
 | Evento | Disparado quando | Parâmetros |
@@ -314,15 +319,16 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 Checklist antes do ar:
 - [x] `whatsappNumber` preenchido (5511918708781)
 - [x] **`metaPixelId`** preenchido (1128316885943842)
-- [ ] `gtmId` preenchido
+- [x] **`gtmId`** preenchido (`GTM-KPPPTLXH`, container verificado em 07/10/2026)
 - [x] **`leadfyId`** preenchido — `grp-f654pt-cap-kabl4y`, **extraído do código-fonte do site
       antigo** (o formulário do WordPress enviava para `grupo-f654pt-cap-kabl4y@leadfy-app.com.br`,
       em `wp_..._2026-10-07_02-14-51.tar.gz` → `softsql.sql`; formato idêntico ao documentado em
       `https://leadfy-imob.com.br/ajuda/integracao-via-api`, seção "Defina o IDENTIFICADOR")
 - [x] testar o formulário de ponta a ponta (local): CORS preflight 200 +
       `POST /webhooks/criar_lead/grp-f654pt-cap-kabl4y/` → **HTTP 200**, mensagem de sucesso na tela
-- [ ] confirmar o lead de teste no **painel da Leadfy** (nome "TESTE integracao site novo") — se não
-      aparecer, o identificador está errado e vale perguntar ao suporte da Leadfy
+- [x] confirmar os leads no **painel da Leadfy** (07/10/2026): `TESTE debug producao 0710`
+      (enviado pelo formulário do site na produção) e `TESTE webhook site 0710` (mesmo endpoint,
+      direto) **chegaram**; os controles com id inválido/antigo **não** apareceram → integração OK
 - [x] domínio real (`https://loteamentoqualidadeelazer.com.br/`) no `canonical`, Open Graph,
       JSON-LD, `robots.txt` e `sitemap.xml`
 - [ ] CRECI, telefone e endereço atualizados no rodapé
@@ -448,10 +454,12 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - [x] **backup do site antigo localizado** no Downloads antes da substituição:
       `well-known.zip` (arquivos do WordPress, 16.606 entradas) e
       `wp_loteamentoqualidadeelazer.com.br_2026-10-07_02-14-51.tar.gz` (arquivos + banco `softsql.sql`)
-- [ ] Google Search Console → adicionar site → enviar `sitemap.xml`
-- [ ] **`gtmId`** preenchido
-- [x] **`leadfyId`** preenchido (`grp-f654pt-cap-kabl4y`) + teste de ponta a ponta no local
-      (POST 200, sem erros de console) — falta confirmar o lead no painel da Leadfy
+- [x] Google Search Console → propriedade criada (07/10/2026) + meta `google-site-verification`
+      nas 4 páginas — falta o upload → **Verificar** no GSC, enviar `sitemap.xml` e pedir indexação
+      da home (isso também rebusca o favicon novo)
+- [x] **`gtmId`** preenchido (`GTM-KPPPTLXH`)
+- [x] **`leadfyId`** preenchido (`grp-f654pt-cap-kabl4y`) + ponta a ponta confirmada no
+      **painel da Leadfy** (07/10/2026): lead do formulário e do webhook chegaram
 - [ ] teste em celular real (menu de idioma, formulário, vídeo)
 
 **Atualizações futuras:** repita o passo 6.2 enviando os arquivos alterados

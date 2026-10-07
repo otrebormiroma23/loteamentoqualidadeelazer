@@ -14,7 +14,7 @@
      ========================================================= */
   var CONFIG = {
     // ID do Google Tag Manager (ex.: 'GTM-ABC1234'). Deixe '' para desativar.
-    gtmId: '',
+    gtmId: 'GTM-KPPPTLXH',
 
     // Número do WhatsApp no formato: 55 + DDD + número (sem espaços, sem '+')
     whatsappNumber: '5511918708781',
