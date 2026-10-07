@@ -55,4 +55,11 @@ Options -Indexes -MultiViews
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Cloudflare: não cachear CSS/JS/JSON no bordo (o ?v= das HTML já resolve, mas
+  # assim nenhuma atualização fica presa 30 dias no CDN — no navegador continua
+  # valendo o cache de 1 mês do mod_expires)
+  <FilesMatch "\.(css|js|json)$">
+    Header set Cloudflare-CDN-Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>

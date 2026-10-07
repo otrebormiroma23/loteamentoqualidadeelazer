@@ -402,17 +402,25 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
   (`cf-cache-status: HIT`) — ou seja, subir um arquivo novo **não** basta: os
   visitantes continuam vendo a versão antiga até o cache expirar (ou até alguém
   fazer *Purge Everything* no CF, o que exige login)
-- Enquanto não há acesso ao CF, o site usa **cache-busting por query string**:
-  as 4 páginas HTML referenciam `assets/css/styles.css?v=20261007b` e
-  `assets/js/main.js?v=20261007b`. Como o HTML **não** é cacheado
-  (`cf-cache-status: DYNAMIC`, `max-age=0`), cada upload de HTML entrega as URLs
-  novas → CF busca os arquivos no origin na hora
+- **Duas proteções contra cache velho:**
+  1. **cache-busting por query string** — as 4 páginas HTML referenciam
+     `assets/css/styles.css?v=20261007c` e `assets/js/main.js?v=20261007c`;
+     como o HTML **não** é cacheado (`cf-cache-status: DYNAMIC`, `max-age=0`),
+     cada upload de HTML entrega as URLs novas → CF busca os arquivos no origin;
+  2. **`.htaccess` manda `Cloudflare-CDN-Cache-Control: no-cache`** para
+     `.css/.js/.json` — o bordo do CF deixa de guardar esses arquivos (no
+     navegador continua valendo o cache de 1 mês). *Esta regra nasceu de um
+     incidente real: em 07/10 o HTML subiu antes do JS, o CF congelou o JS
+     antigo na URL nova e serviu código desatualizado por 30 dias.*
+- ⚠️ **Ordem de upload:** suba **assets (CSS/JS/pastas) primeiro e HTML por último**
+  — se o HTML chegar primeiro, o CF pode buscar o asset ainda antigo e guardá-lo
+  sob a URL nova.
 - ⚠️ **Ao alterar `styles.css` ou `main.js`: aumente a `?v=` nas 4 páginas**
   (`index.html`, `lgpd.html`, `politica-de-privacidade.html`, `termos-de-uso.html`)
   e suba os 4 HTMLs junto com o arquivo alterado — formato `?v=AAAAMMDD` (+ letra
-  se houver mais de uma mudança no mesmo dia; versão atual: `20261007b`)
+  se houver mais de uma mudança no mesmo dia; versão atual: `20261007c`)
 - Conferência rápida: abrir
-  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007b`
+  `https://loteamentoqualidadeelazer.com.br/assets/js/main.js?v=20261007c`
   e procurar o marcador da última alteração
 
 ### 6.5 Status pós-publicação
