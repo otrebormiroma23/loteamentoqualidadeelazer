@@ -35,8 +35,11 @@
     // Leadfy — IDENTIFICADOR do webhook de criação de lead.
     // Formatos aceitos: hash da empresa (10 caracteres, ex.: '18952qf65x'),
     // 'grp-xxxxxx' (grupo) ou 'usr-xxxxxx' (corretor). Peça à equipe de suporte da Leadfy.
+    // Valor recuperado do site antigo (WordPress): o formulário enviava para
+    // grupo-f654pt-cap-kabl4y@leadfy-app.com.br — mesmo formato grp-<6>-cap-<6>
+    // documentado em https://leadfy-imob.com.br/ajuda/integracao-via-api
     // Deixe '' para manter o modo demonstração.
-    leadfyId: '',
+    leadfyId: 'grp-f654pt-cap-kabl4y',
 
     // URL do Tour Virtual 360º (abre em modal com iframe; sem URL, o botão vira link externo)
     tourUrl: 'https://tour.meupasseiovirtual.com/view/pXBTiiy7fYU',

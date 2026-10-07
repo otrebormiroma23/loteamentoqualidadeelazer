@@ -96,6 +96,13 @@ var CONFIG = {
 1. Peça à equipe de suporte da Leadfy o **IDENTIFICADOR** do webhook (hash de 10 caracteres
    da empresa, ou `grp-xxxxxx` para grupo, ou `usr-xxxxxx` para corretor) e cole em `leadfyId`.
    Documentação: `https://leadfy-imob.com.br/ajuda/integracao-via-api`.
+
+   > **Valor em uso:** `grp-f654pt-cap-kabl4y` — recuperado do código-fonte do site antigo
+   > (formulário do WordPress enviava para `grupo-f654pt-cap-kabl4y@leadfy-app.com.br`;
+   > verificado em `wp_..._2026-10-07_02-14-51.tar.gz` → `softsql.sql`). O formato do e-mail é
+   > idêntico ao da API (`grp-<6>-cap-<6>`, onde `cap` = impulsionador). Atenção: o webhook
+   > responde **HTTP 200 para qualquer identificador** (testado), então a prova real é ver o
+   > lead de teste chegando no painel da Leadfy.
 2. Com `leadfyId` preenchido, o JS envia `POST` para
    `https://leadfy-imob.com.br/webhooks/criar_lead/<IDENTIFICADOR>/` no formato que a API
    documenta (inclui os aliases `name`/`phone` citados no exemplo dela):
@@ -281,8 +288,14 @@ Checklist antes do ar:
 - [x] `whatsappNumber` preenchido (5511918708781)
 - [x] **`metaPixelId`** preenchido (1128316885943842)
 - [ ] `gtmId` preenchido
-- [ ] **`leadfyId`** (IDENTIFICADOR enviado pela suporte da Leadfy) ou `crmEndpoint` preenchido
-- [ ] testar o formulário de ponta a ponta e confirmar o lead chegando no painel da Leadfy
+- [x] **`leadfyId`** preenchido — `grp-f654pt-cap-kabl4y`, **extraído do código-fonte do site
+      antigo** (o formulário do WordPress enviava para `grupo-f654pt-cap-kabl4y@leadfy-app.com.br`,
+      em `wp_..._2026-10-07_02-14-51.tar.gz` → `softsql.sql`; formato idêntico ao documentado em
+      `https://leadfy-imob.com.br/ajuda/integracao-via-api`, seção "Defina o IDENTIFICADOR")
+- [x] testar o formulário de ponta a ponta (local): CORS preflight 200 +
+      `POST /webhooks/criar_lead/grp-f654pt-cap-kabl4y/` → **HTTP 200**, mensagem de sucesso na tela
+- [ ] confirmar o lead de teste no **painel da Leadfy** (nome "TESTE integracao site novo") — se não
+      aparecer, o identificador está errado e vale perguntar ao suporte da Leadfy
 - [x] domínio real (`https://loteamentoqualidadeelazer.com.br/`) no `canonical`, Open Graph,
       JSON-LD, `robots.txt` e `sitemap.xml`
 - [ ] CRECI, telefone e endereço atualizados no rodapé
@@ -377,10 +390,13 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - [x] Meta Pixel no ar (`signals/config/1128316885943842`), só após consentimento
 - [x] idiomas no ar (11 opções; EN → PT restaura o texto original)
 - [x] Lighthouse no ar: Acessibilidade 100 · Boas Práticas 100 · SEO 100 (0 falhas)
-- [ ] confirmar se o **backup do WordPress** (ZIP) foi baixado antes da substituição
+- [x] **backup do site antigo localizado** no Downloads antes da substituição:
+      `well-known.zip` (arquivos do WordPress, 16.606 entradas) e
+      `wp_loteamentoqualidadeelazer.com.br_2026-10-07_02-14-51.tar.gz` (arquivos + banco `softsql.sql`)
 - [ ] Google Search Console → adicionar site → enviar `sitemap.xml`
 - [ ] **`gtmId`** preenchido
-- [ ] **`leadfyId`** preenchido + teste de ponta a ponta do formulário (celular)
+- [x] **`leadfyId`** preenchido (`grp-f654pt-cap-kabl4y`) + teste de ponta a ponta no local
+      (POST 200, sem erros de console) — falta confirmar o lead no painel da Leadfy
 - [ ] teste em celular real (menu de idioma, formulário, vídeo)
 
 **Atualizações futuras:** repita o passo 6.2 enviando os arquivos alterados
