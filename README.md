@@ -270,7 +270,8 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 ## 5. Performance e SEO
 
 - **Page Speed:** poster do hero com `preload` + `fetchpriority="high"` e corte server-side
-  (WebP). Imagens da dobra carregam sob demanda.
+  (JPEG 1440 px, recortado por CSS com `object-fit: cover`). Imagens da dobra carregam
+  sob demanda (`loading="lazy"`).
 - **SEO técnico:** um único `H1`, `H2` por seção, `meta description` focada em
   *"loteamento fechado de luxo no interior"*, Open Graph, Twitter Card, `canonical`,
   `robots.txt`, `sitemap.xml` e **JSON-LD** (`LocalBusiness` + `FAQPage`).
@@ -293,5 +294,56 @@ Checklist antes do ar:
 - [ ] testar o banner de cookies (aceitar, recarregar, recusar, reabrir pelo rodapé)
 - [ ] trocar de idioma com e sem cookies aceitos (deve pedir consentimento primeiro)
 - [ ] links do Instagram e Facebook do rodapé conferidos (4 páginas)
+
+---
+
+## 6. Publicar na HostGator
+
+O site é **100% estático** (HTML/CSS/JS, sem build) — roda no plano compartilhado
+mais simples da HostGator.
+
+### 6.1 Pacote de upload
+ZIP com `.htaccess` + `index.html` + as 3 páginas legais + `robots.txt` +
+`sitemap.xml` + pasta `assets/` (**26 arquivos, ~46,6 MB**). Sem `.git` e sem `README`.
+
+```powershell
+# gerar/atualizar o ZIP (PowerShell, na raiz do projeto)
+$zip = "$env:LOCALAPPDATA\Temp\opencode\site-hostgator.zip"
+if (Test-Path $zip) { Remove-Item $zip -Force }
+$files = @('.htaccess','index.html','lgpd.html','politica-de-privacidade.html',
+           'termos-de-uso.html','robots.txt','sitemap.xml')
+$files += (Get-ChildItem -Recurse -File assets).FullName
+Compress-Archive -Path $files -DestinationPath $zip -CompressionLevel Optimal
+```
+
+### 6.2 Upload (cPanel → File Manager)
+1. **cPanel → Gerenciador de Arquivos** → entre em `public_html` (domínio principal)
+   ou `public_html/seudominio.com.br` (domínio adicional/adon)
+2. **Configurações → Mostrar arquivos ocultos** (para ver o `.htaccess`) → Save
+3. Apague o que a HostGator deixou: `default.html`, `cgi-bin/`, `index2.html`
+4. **Enviar → Enviar arquivo** → escolha o ZIP → Upload → feche a aba
+5. Selecione o ZIP → **Extrair** → OK → delete o ZIP
+
+### 6.3 HTTPS
+- cPanel → **SSL/TLS → Emitir certificado** (ou “AutoSSL”) → Let's Encrypt → Emitir
+- Ative o redirecionamento automático para HTTPS (o `.htaccess` também força)
+
+### 6.4 `.htaccess` (criado na raiz)
+- força HTTPS, `DirectoryIndex index.html`, `Options -Indexes`
+- gzip (mod_deflate), cache de 6 meses para imagens/vídeo, 0 para HTML
+- cabeçalhos `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`
+- **regras de www/sem www comentadas** — descomente UMA depois do domínio estar no ar
+
+### 6.5 Depois do primeiro upload
+- [ ] abrir `https://SEUDOMINIO/` e conferir fotos, vídeo, formulário e WhatsApp
+- [ ] descomentar no `.htaccess` a regra de **www** ou **sem www** (escolher só uma)
+- [ ] trocar o domínio placeholder (`santabarbararesort.com.br`) em `canonical`,
+      `og:url`, `og:image`, JSON-LD, `robots.txt` e `sitemap.xml`
+- [ ] Google Search Console → adicionar site → enviar `sitemap.xml`
+- [ ] conferir Meta Pixel e GTM no navegador (depois de aceitar cookies)
+- [ ] testar o formulário no celular (lead chegando na Leadfy)
+
+**Atualizações futuras:** repita só o passo 6.2 com os arquivos alterados
+(normalmente só `index.html` ou `assets/`).
 
 # loteamentoqualidadeelazer
