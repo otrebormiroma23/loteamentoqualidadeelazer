@@ -454,10 +454,11 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 - [x] **backup do site antigo localizado** no Downloads antes da substituição:
       `well-known.zip` (arquivos do WordPress, 16.606 entradas) e
       `wp_loteamentoqualidadeelazer.com.br_2026-10-07_02-14-51.tar.gz` (arquivos + banco `softsql.sql`)
-- [x] Google Search Console → propriedade criada (07/10/2026) + meta `google-site-verification`
-      nas 4 páginas — falta o upload → **Verificar** no GSC, enviar `sitemap.xml` e pedir indexação
-      da home (isso também rebusca o favicon novo)
-- [x] **`gtmId`** preenchido (`GTM-KPPPTLXH`)
+- [x] Google Search Console → **100% (07/10/2026)**: propriedade verificada por Tag HTML
+      (`google-site-verification` nas 4 páginas), `sitemap.xml` enviado e **Processado —
+      4 páginas**, recrawl da home solicitado (renova favicon/título/OG no Google)
+- [x] **`gtmId`** preenchido (`GTM-KPPPTLXH`) — tags redundantes de Meta removidas no GTM
+      (o pixel oficial é o do `main.js`, consent-gated)
 - [x] **`leadfyId`** preenchido (`grp-f654pt-cap-kabl4y`) + ponta a ponta confirmada no
       **painel da Leadfy** (07/10/2026): lead do formulário e do webhook chegaram
 - [ ] teste em celular real (menu de idioma, formulário, vídeo)
