@@ -334,10 +334,10 @@ Checklist antes do ar:
 - [ ] CRECI, telefone e endereço atualizados no rodapé
 - [ ] imagens e vídeo definitivos do empreendimento
 - [ ] testar o formulário no celular (máscara de WhatsApp e botão de polegar)
-- [ ] conferir as distâncias da seção Localização com a equipe de vendas —
-      **conflito com o site antigo** (banco `softsql.sql`): antigo publicava
-      Bauru 1h15 · Sorocaba 2h20 · Campinas 3h; o novo diz 50min · 1h40 · 2h00.
-      "Águas de Santa Bárbara —15 min" veio do site antigo e já foi incluído
+- [x] distâncias da Localização **confirmadas com a equipe (08/10/2026)**: os valores do
+      site novo estão **certos** (Bauru 50min · Sorocaba 1h40 · Campinas 2h00) — os do site
+      antigo estavam desatualizados. "Águas de Santa Bárbara —15 min" veio do site antigo
+      (da Momentum) e permanece
 - [ ] páginas legais revisadas pelo jurídico — identificação da empresa (razão social/CNPJ) e
       do encarregado foram **omitidas de propósito**: inclua só com autorização de uso dos dados
 - [ ] revisar prazos de retenção e foro com o jurídico
@@ -470,11 +470,16 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
       (inclui "Santa Bárbara Resort Residence" — era o nome no site antigo),
       H1 com a marca, FAQ com5 Q (JSON-LD ⇄ visível espelhado) e
       "Águas de Santa Bárbara —15 min" na Localização · Lighthouse 100/100/100
-- [ ] esclarecer o termo **"Momentum"** — no banco do site antigo só aparece como texto
-      de demonstração de template, sem relação com o empreendimento
-- [ ] SEO off-page: **Google Business Profile** do stand de vendas + cadastro nos
-      portais (ImovelWeb, Zap, VivaReal, OLX, Loteamentos.com.br) + conferir em 1-2 semanas
-      o relatório **Desempenho** do GSC (quais consultas já geram impressão)
+- [x] termo **"Momentum"** esclarecido (08/10/2026): Momentum = **Momentum Empreendimentos
+      Imobiliários Ltda.** (`momentum.com.br`, CNPJ 47.686.555/0001-00), dona do
+      empreendimento — incluído no site em keywords, section-lead do Empreendimento,
+      FAQ "Quem é a Momentum?" (6 Q, espelhada), `parentOrganization` no JSON-LD e link
+      "Empreendimento da Momentum" no rodapé
+- [ ] SEO off-page: **Google Business Profile** do stand (endereço informado:
+      **Km 292 da Rod. Castello Branco** — completar cidade/CEP na hora do cadastro) +
+      cadastro nos portais (ImovelWeb, Zap, VivaReal, OLX, Loteamentos.com.br) +
+      pedir à Momentum um link de `momentum.com.br` → este site (backlink oficial) +
+      conferir em 1-2 semanas o relatório **Desempenho** do GSC (consultas/impressões)
 - [ ] teste em celular real (menu de idioma, formulário, vídeo)
 
 **Atualizações futuras:** repita o passo 6.2 enviando os arquivos alterados
