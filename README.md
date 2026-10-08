@@ -472,9 +472,10 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
       "Águas de Santa Bárbara —15 min" na Localização · Lighthouse 100/100/100
 - [x] termo **"Momentum"** esclarecido (08/10/2026): Momentum = **Momentum Empreendimentos
       Imobiliários Ltda.** (`momentum.com.br`, CNPJ 47.686.555/0001-00), dona do
-      empreendimento — incluído no site em keywords, section-lead do Empreendimento,
-      FAQ "Quem é a Momentum?" (6 Q, espelhada), `parentOrganization` no JSON-LD e link
-      "Empreendimento da Momentum" no rodapé
+      empreendimento — incluído em keywords, section-lead do Empreendimento,
+      FAQ "Quem é a Momentum?" (6 Q, espelhada) e `parentOrganization` no JSON-LD
+      (o link no rodapé foi **removido a pedido** em 08/10; crédito "Desenvolvido por:
+      Roberto Amorim Cavalcanti" incluído no footer-bottom)
 - [ ] SEO off-page: **Google Business Profile** do stand (endereço informado:
       **Km 292 da Rod. Castello Branco** — completar cidade/CEP na hora do cadastro) +
       cadastro nos portais (ImovelWeb, Zap, VivaReal, OLX, Loteamentos.com.br) +
