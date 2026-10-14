@@ -153,7 +153,11 @@ h3{font-family:var(--font-ui);font-size:1.06rem;font-weight:500;letter-spacing:.
 }
 .nav a:not(.btn):hover::after{transform:scaleX(1);transform-origin:left}
 .nav .nav-cta{color:#fff;padding:11px 22px;font-size:11.5px}
+/* Hover do CTA: herói → fundo branco + letra verde (o color:#fix acima venceria o --btn-fg) */
+.nav .nav-cta:hover{--btn-fg:var(--green-900);color:var(--green-900)}
 .site-header.is-solid .nav .nav-cta{--btn-bg:var(--green-900);--btn-bd:var(--green-900);color:#fff}
+/* Hover no header sólido: mantém fundo verde escuro (nunca caixa branca com texto branco) */
+.site-header.is-solid .nav .nav-cta:hover{background:var(--green-800);--btn-bd:var(--green-800);color:#fff}
 
 .nav-toggle{display:none;width:44px;height:44px;background:none;border:0;padding:10px;position:relative;z-index:120}
 .nav-toggle span{display:block;height:1.5px;background:#fff;margin:6px 0;transition:transform .35s var(--ease),opacity .25s var(--ease),background .4s var(--ease)}
