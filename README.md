@@ -487,4 +487,47 @@ Procedimento seguro (não afeta caixas de e-mail do domínio):
 (normalmente só `index.html`, `assets/` ou `.htaccess`) para a pasta document root
 do domínio — `public_html/loteamentoqualidadeelazer/` nesta conta.
 
+### 6.3 SEO gratuito — plano sem investimento (30/10/2026)
+
+**Realidade por termo de busca (busca exata, sem pagar nada):**
+
+| Termo | Previsão honesta |
+|---|---|
+| Santa Bárbara Resort | ✅ 1ª página em dias/semanas (marca + domínio com histórico) |
+| Santa Bárbara Resort Residence | ✅ semanas/meses — o oficial `santabarbararesidence.com` compete; devemos aparecer junto |
+| Momentum (sozinho) | ❌ dominado por marcas gigantes — mirar "Momentum Santa Bárbara" |
+| Loteamento / lotes / terreno no interior | ⚠️ meses — dominado por portais; entra pela cauda longa + cadastros grátis |
+| Condomínio (sozinho) | ❌ dicionário e portais — inviável; viável "condomínio fechado no interior" |
+| Chácaras (sozinho) | ❌ OLX/Zap dominam — viável "chácaras no interior de SP" |
+
+**Ações gratuitas, da maior para a menor alavanca:**
+
+1. **Google Business Profile** (grátis, maior impacto local): nome *Santa Bárbara Resort*,
+   categoria *Loteamento*, endereço *Rod. Castello Branco, km 292 — Águas de Santa Bárbara/SP —
+   CEP 18770-000*, telefone *(11) 91870-8781*, site, 08h–18h, fotos do stand → depois
+   1 foto/post por semana
+2. **Cadastros grátis nos portais** (kit abaixo) — cada cadastro = backlink + asset
+   concorrendo por "lotes no interior": OLX, VivaReal, Zap Imóveis, ImovelWeb,
+   Loteamentos.com.br, Chaves na Mão, MercadoLivre (Lotes e Terrenos)
+3. **Link oficial da Momentum** (`momentum.com.br` → este site) — backlink mais
+   valioso do plano, custo zero (relacionamento)
+4. **Redes**: link no bio do Instagram + posts com os termos; canal YouTube com os
+   vídeos do empreendimento (backlink de domínio do Google)
+5. **GSC Desempenho**: a cada 2 semanas colar o print das consultas → ajuste fino
+
+**Kit de cadastros (copiar/colar nos portais — texto FORA do site, não altera a página):**
+
+- **Nome:** Santa Bárbara Resort — Loteamento Qualidade de Vida e Lazer
+- **Endereço:** Rod. Castello Branco, km 292 — Águas de Santa Bárbara/SP — CEP 18770-000
+- **Telefone:** (11) 91870-8781
+- **Site:** https://loteamentoqualidadeelazer.com.br/
+- **Categoria:** Lotes e terrenos / Loteamento
+- **Descrição (1–2 linhas):** "Loteamento fechado de luxo no interior de SP, a 2h30 de
+  São Paulo: lotes de 450m² a 2.500m² em até 180x, água do Aquífero Guarani, Acqua SPA,
+  3 clubes e controle de acesso 24h — a 15 min de Águas de Santa Bárbara."
+- **Fotos:** usar os JPGs otimizados de `assets/img/fotos/`
+
+Técnico invisível já no site (não mexe em texto visível): `meta keywords` com os termos
+acima, `sameAs` (Instagram/Facebook) e `VideoObject` no JSON-LD — 30/10/2026.
+
 # loteamentoqualidadeelazer
