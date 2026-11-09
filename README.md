@@ -190,7 +190,7 @@ var CONFIG = {
     `sb_lang`; volta ao português restaura o texto original **byte a byte**;
   - validação do formulário (`setError`) e o “Enviando…” também são traduzidos via `tr()`;
   - no **árabe** (`ar`) o documento vira `dir="rtl"`: alinhamentos espelhados, entrelinha maior
-    e a fonte **Tajawal** na pilha tipográfica (Inter/Montserrat/Playfair não têm glifos árabes);
+    e a fonte **Tajawal** na pilha tipográfica (Inter/Montserrat/Marcellus/Cinzel não têm glifos árabes);
   - **regenerar pacotes**: depois de alterar textos em português, me avise — o JSON é regenerado
     a partir da página (enquanto isso, o fallback do Google cobre o texto novo no visitante).
 - Idioma gerado por JS (mensagens, rótulos ARIA) segue a mesma cache — WhatsApp do consultor
@@ -217,9 +217,11 @@ var CONFIG = {
 │   │   └── hero-1080.mp4       # vídeo do hero — versão desktop (1080p, 3,3 MB)
 │   └── img/
 │       ├── favicon.png          # símbolo da marca (512×512, palmeira verde sobre branco)
-│       ├── logo-lockup.png      # logo sem slogan (header)
-│       ├── logo-footer.png      # logo com slogan (rodapé)
-│       ├── logo-symbol.png      # só o símbolo (redes, selos)
+│       ├── logo-horizontal-cor.svg      # kit: header sólido + topo das legais (816×256)
+│       ├── logo-horizontal-negativa.svg # kit: header no herói/menu aberto + rodapé (creme)
+│       ├── logo-empilhada-negativa.svg  # kit: versão empilhada p/ posts (reserva)
+│       ├── favicon.svg / favicon.png / apple-touch-icon-180.png / icone-192.png  # kit (ícones)
+│       ├── logo-lockup.png / logo-footer.png / logo-symbol.png  # versões antigas (reserva)
 │       ├── logo-santa-barbara.png # original 3508×2480 (fonte para novos cortes)
 │       ├── palm-frond.svg       # overlay gráfico de folha de palmeira
 │       └── fotos/               # TODAS as fotos do site (troque mantendo o nome)
@@ -293,9 +295,9 @@ do `<img>` correspondente para evitar salto de layout (CLS).
 | Outros assets | Arquivo | Como trocar |
 |---|---|---|
 | Overlay de palmeira | `assets/img/palm-frond.svg` | Vetor próprio, reaproveitado em 3 pontos da página |
-| Logo (header) | `assets/img/logo-lockup.png` | Troque pelo arquivo oficial mantendo o corte **sem slogan** (proporção ≈ 4,2:1). Altura controlada em `styles.css` → `.brand-logo` |
-| Logo (rodapé) | `assets/img/logo-footer.png` | Versão branca aplicada por CSS (`filter:brightness(0) invert(1)`), então qualquer cor da original serve |
-| Ícone do site | `assets/img/favicon.png` + `favicon.ico` (raiz) | 512×512, palmeira verde sobre branco (visível em fundo claro e escuro); `<head>` com `?v=` para o CF não servir versão velha |
+| Logo (header) | `assets/img/logo-horizontal-cor.svg` + `logo-horizontal-negativa.svg` (kit 09/11/2026) | Duas imagens no HTML: negativa no herói/menu aberto, cores no header sólido — alternância por CSS em `.brand-logo--*`, sem filtro. Altura em `.brand-logo` |
+| Logo (rodapé) | `assets/img/logo-horizontal-negativa.svg` (kit) | Arte já em creme — **sem** `filter` no CSS |
+| Ícone do site | `favicon.svg` + `favicon.ico` (raiz) + `apple-touch-icon-180.png` (kit) | `favicon.png` 512×512 = `icone-512` do kit, também usado como `logo` do JSON-LD LocalBusiness; `<head>` com `?v=` para o CF não servir versão velha |
 
 **Boas práticas já aplicadas:**
 - imagens **locais** (sem chamadas a CDN de terceiros — só as fontes Google saem da página);
